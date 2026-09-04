@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Healthy Habits">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#DBEDE2"/>
+      <stop offset="100%" stop-color="#C7D9CC"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <circle cx="400" cy="200" r="55" fill="#F1F0F5"/>
+  <path d="M340 280 q60 90 120 0" fill="#F1F0F5"/>
+  <path d="M280 340 q60 -40 100 10" fill="none" stroke="#7FA997" stroke-width="14" stroke-linecap="round"/>
+  <path d="M420 350 q50 -30 100 20" fill="none" stroke="#7FA997" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="560" cy="150" r="28" fill="#FFFFFF" opacity=".6"/>
+</svg>

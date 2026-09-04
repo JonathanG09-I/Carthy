@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Academic Success">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#BFD7EA"/>
+      <stop offset="100%" stop-color="#DBEDE2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <path d="M180 320 L400 200 L620 320 L400 440 Z" fill="#FFFFFF" opacity=".75"/>
+  <path d="M400 200 L400 440" stroke="#7FA997" stroke-width="6"/>
+  <rect x="300" y="120" width="200" height="28" rx="8" fill="#B9DACD"/>
+  <circle cx="620" cy="160" r="40" fill="#FFFFFF" opacity=".5"/>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Mental Health">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#DBEDE2"/>
+      <stop offset="100%" stop-color="#B9DACD"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <circle cx="560" cy="180" r="90" fill="#FFFFFF" opacity=".55"/>
+  <circle cx="250" cy="320" r="120" fill="#FFFFFF" opacity=".35"/>
+  <ellipse cx="380" cy="270" rx="70" ry="85" fill="#F1F0F5"/>
+  <circle cx="380" cy="175" r="48" fill="#F1F0F5"/>
+  <path d="M340 175 q40 -55 80 0" fill="none" stroke="#222" stroke-width="4" stroke-linecap="round" opacity=".25"/>
+  <circle cx="362" cy="170" r="5" fill="#222" opacity=".35"/>
+  <circle cx="398" cy="170" r="5" fill="#222" opacity=".35"/>
+  <path d="M360 195 q20 14 40 0" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" opacity=".3"/>
+  <path d="M470 140 q40 -20 55 25" fill="none" stroke="#7FA997" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="530" cy="120" r="18" fill="#7FA997" opacity=".7"/>
+</svg>

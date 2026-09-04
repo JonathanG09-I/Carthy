@@ -1,0 +1,26 @@
+# Entorno virtual de Python
+venv/
+env/
+.venv/
+
+# Archivos compilados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Base de datos local (contiene datos reales de usuarios, nunca debe subirse)
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos de configuración sensibles
+.env
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de VS Code (opcional, deja esto si prefieres compartir la config del editor)
+.vscode/
+
+# Archivos estáticos recolectados (se generan con collectstatic, no se versionan)
+staticfiles/

@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ resource.title_en }} — Carthy</title>
+    <meta name="theme-color" content="#B9DACD">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        carthy: {
+                            mint: '#B9DACD', mintLight: '#DBEDE2', bg: '#F1F0F5', ink: '#222222',
+                            darkBg: '#17181A', darkSurface: '#212226', darkSurface2: '#2A2B30',
+                            darkBorder: '#34353A', darkText: '#ECECEC', darkMuted: '#9B9CA1',
+                        }
+                    },
+                    fontFamily: { display: ['Fraunces', 'Georgia', 'serif'], body: ['Lato', 'sans-serif'] }
+                }
+            }
+        };
+        if (localStorage.getItem('carthy-theme') === 'dark') document.documentElement.classList.add('dark');
+    </script>
+    <style>
+        body { font-family: 'Lato', sans-serif; background: #F1F0F5; color: #222; }
+        html.dark body { background: #17181A; color: #ECECEC; }
+        .font-display { font-family: 'Fraunces', Georgia, serif; }
+        .article-body { max-width: 42rem; }
+        .article-body h2 { font-family: 'Fraunces', Georgia, serif; font-size: 1.35rem; font-weight: 700; margin: 2rem 0 .85rem; scroll-margin-top: 5.5rem; }
+        .article-body p { margin-bottom: 1.15rem; line-height: 1.85; color: #3a3a3a; font-size: 1.05rem; }
+        html.dark .article-body p { color: #c8c8c8; }
+        .article-body ul { list-style: disc; padding-left: 1.35rem; margin: 0 0 1.15rem; }
+        .article-body li { margin-bottom: .45rem; line-height: 1.7; }
+        .sticky-back { position: sticky; top: 0; z-index: 30; }
+        :focus-visible { outline: 2px solid #B9DACD; outline-offset: 2px; }
+        #toc-mobile summary::-webkit-details-marker { display: none; }
+        #toc-mobile[open] summary i { transform: rotate(180deg); }
+        #toc-mobile summary i { transition: transform .2s ease; }
+    </style>
+</head>
+<body>
+    <header class="sticky-back bg-white/95 dark:bg-carthy-darkSurface/95 backdrop-blur border-b border-gray-100 dark:border-carthy-darkBorder">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+            <a id="back-link" href="/resources/" class="inline-flex items-center gap-2 text-sm font-bold hover:text-emerald-800 dark:hover:text-carthy-mint">
+                <i class="fa-solid fa-arrow-left text-carthy-mint" aria-hidden="true"></i>
+                <span id="back-label">Back to Resources</span>
+            </a>
+            <div class="flex items-center gap-2">
+                <button type="button" id="btn-lang" class="text-xs font-bold px-3 py-2 rounded-xl bg-carthy-mintLight dark:bg-carthy-darkSurface2" aria-label="Toggle language">EN</button>
+                <a href="/" class="font-display text-lg font-bold">Carthy</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div class="rounded-2xl md:rounded-3xl overflow-hidden shadow-md mb-8 aspect-[21/9] bg-carthy-mintLight">
+            <img id="cover" src="" alt="" class="w-full h-full object-cover" loading="eager">
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4" id="badges"></div>
+        <h1 id="title" class="font-display text-3xl sm:text-4xl font-extrabold leading-tight mb-4"></h1>
+        <div id="meta" class="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-carthy-darkMuted mb-8"></div>
+
+        <div id="video-wrap" class="hidden rounded-2xl overflow-hidden shadow-lg mb-8 aspect-video bg-black"></div>
+        <div id="pdf-wrap" class="hidden mb-8"></div>
+
+        <div class="grid lg:grid-cols-[220px_minmax(0,1fr)] gap-6 lg:gap-8 items-start">
+            <!-- Mobile TOC: accordion above content (avoids overlap) -->
+            <details id="toc-mobile" class="hidden lg:!hidden rounded-2xl border border-gray-100 dark:border-carthy-darkBorder bg-white dark:bg-carthy-darkSurface p-4">
+                <summary class="text-[10px] font-bold uppercase tracking-wider text-gray-400 cursor-pointer list-none flex items-center justify-between">
+                    <span id="toc-label-mobile">Contents</span>
+                    <i class="fa-solid fa-chevron-down text-xs" aria-hidden="true"></i>
+                </summary>
+                <nav class="space-y-2 text-sm mt-3 pt-3 border-t border-gray-100 dark:border-carthy-darkBorder" id="toc-mobile-nav" aria-label="Table of contents"></nav>
+            </details>
+
+            <!-- Desktop TOC: sidebar only from lg up -->
+            <aside id="toc-wrap" class="hidden lg:block sticky top-20">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-3" id="toc-label">Contents</p>
+                <nav class="space-y-2 text-sm" id="toc" aria-label="Table of contents"></nav>
+            </aside>
+            <div class="min-w-0">
+                <p id="lead" class="text-lg text-gray-600 dark:text-carthy-darkMuted leading-relaxed mb-8 border-l-4 border-carthy-mint pl-4"></p>
+                <article id="body" class="article-body bg-white dark:bg-carthy-darkSurface rounded-2xl md:rounded-3xl border border-gray-100 dark:border-carthy-darkBorder shadow-sm p-5 sm:p-8 mb-10"></article>
+            </div>
+        </div>
+
+        <section class="bg-gradient-to-br from-carthy-mintLight to-white dark:from-carthy-darkSurface2 dark:to-carthy-darkSurface rounded-2xl md:rounded-3xl border border-carthy-mint/40 dark:border-carthy-darkBorder p-6 sm:p-8 mb-10 text-center">
+            <h2 id="support-title" class="font-display text-xl sm:text-2xl font-bold mb-2">Need Additional Support?</h2>
+            <p id="support-text" class="text-sm text-gray-600 dark:text-carthy-darkMuted mb-5 max-w-md mx-auto">If you're feeling overwhelmed, remember you don't have to face it alone.</p>
+            <p id="support-sub" class="text-xs text-gray-400 mb-4">Book an Active Listening Session</p>
+            <a href="/app/?tab=agendar" id="support-cta" class="inline-flex items-center gap-2 bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink font-bold text-sm px-6 py-3 rounded-xl hover:opacity-90">Book Session</a>
+        </section>
+
+        <section class="mb-10">
+            <h2 id="sources-title" class="font-display text-xl font-bold mb-4">Sources</h2>
+            <ul id="sources" class="space-y-2"></ul>
+        </section>
+
+        <section class="mb-8">
+            <h2 id="related-title" class="font-display text-xl font-bold mb-5">Related Resources</h2>
+            <div id="related" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+    </main>
+
+    <footer class="border-t border-gray-100 dark:border-carthy-darkBorder py-6 text-center text-[11px] text-gray-400 dark:text-carthy-darkMuted">
+        <p>© 2026 Carthy Academic Project · Version 1.0</p>
+    </footer>
+
+    {{ payload_en|json_script:"data-en" }}
+    {{ payload_es|json_script:"data-es" }}
+    {{ related_en|json_script:"rel-en" }}
+    {{ related_es|json_script:"rel-es" }}
+
+    <script>
+    const UI = {
+        en: {
+            back: 'Back to Resources', contents: 'Contents', sources: 'Sources', related: 'Related Resources',
+            supportTitle: 'Need Additional Support?',
+            supportText: "If you're feeling overwhelmed, remember you don't have to face it alone.",
+            supportSub: 'Book an Active Listening Session', supportCta: 'Book Session',
+            by: 'By', min: 'min', author: 'Author', date: 'Publication Date', website: 'Official Website',
+            visit: 'Visit official site →', sourceLabel: 'Source', views: 'views',
+        },
+        es: {
+            back: 'Volver a Recursos', contents: 'Contenidos', sources: 'Fuentes', related: 'Recursos relacionados',
+            supportTitle: '¿Necesitas apoyo adicional?',
+            supportText: 'Si te sientes abrumado/a, recuerda que no tienes que enfrentarlo solo/a.',
+            supportSub: 'Agenda una sesión de escucha activa', supportCta: 'Agendar sesión',
+            by: 'Por', min: 'min', author: 'Autor', date: 'Fecha de publicación', website: 'Sitio oficial',
+            visit: 'Visitar sitio oficial →', sourceLabel: 'Fuente', views: 'vistas',
+        }
+    };
+
+    let lang = localStorage.getItem('carthy-lang') || 'en';
+    const dataEn = JSON.parse(document.getElementById('data-en').textContent);
+    const dataEs = JSON.parse(document.getElementById('data-es').textContent);
+    const relEn = JSON.parse(document.getElementById('rel-en').textContent);
+    const relEs = JSON.parse(document.getElementById('rel-es').textContent);
+
+    // If user came from dashboard, keep back link to dashboard resources
+    if (document.referrer.includes('/app/')) {
+        document.getElementById('back-link').href = '/app/?tab=recursos';
+    }
+
+    function esc(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function render() {
+        const r = lang === 'es' ? dataEs : dataEn;
+        const related = lang === 'es' ? relEs : relEn;
+        const u = UI[lang];
+        document.documentElement.lang = lang;
+        document.getElementById('btn-lang').textContent = lang.toUpperCase();
+        document.getElementById('back-label').textContent = u.back;
+        document.title = r.title + ' — Carthy';
+        document.getElementById('cover').src = r.cover_image;
+        document.getElementById('cover').alt = r.title;
+        const tags = Array.isArray(r.tags) && r.tags.length
+            ? r.tags
+            : String(r.keywords || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 6);
+        const tagBadges = tags.map(tg =>
+            `<span class="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-gray-100 dark:bg-carthy-darkSurface2 text-gray-500 dark:text-carthy-darkMuted">${esc(tg)}</span>`
+        ).join('');
+        document.getElementById('badges').innerHTML = `
+            <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-carthy-mintLight text-emerald-900 dark:bg-carthy-mint/20 dark:text-carthy-mint">${esc(r.category_label)}</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white dark:bg-carthy-darkSurface2 border border-gray-100 dark:border-carthy-darkBorder text-gray-500">${esc(r.resource_type_label)}</span>
+            ${tagBadges}`;
+        document.getElementById('title').textContent = r.title;
+        const viewsHtml = Number(r.view_count) > 0
+            ? `<span><i class="fa-regular fa-eye mr-1.5 text-carthy-mint"></i>${esc(String(r.view_count))} ${u.views}</span>`
+            : '';
+        document.getElementById('meta').innerHTML = `
+            <span><i class="fa-solid fa-user-pen mr-1.5 text-carthy-mint"></i>${esc(r.author)}</span>
+            <span><i class="fa-regular fa-clock mr-1.5 text-carthy-mint"></i>${r.resource_type === 'video' && r.video_duration ? esc(r.video_duration) : (r.reading_time + ' ' + u.min)}</span>
+            <span><i class="fa-regular fa-calendar mr-1.5 text-carthy-mint"></i>${esc(lang==='es' && r.publication_date_es ? r.publication_date_es : r.publication_date)}</span>
+            ${viewsHtml}`;
+        document.getElementById('lead').textContent = r.short_description;
+        document.getElementById('body').innerHTML = r.full_content_html || '';
+
+        const toc = r.toc || [];
+        const tocWrap = document.getElementById('toc-wrap');
+        const tocMobile = document.getElementById('toc-mobile');
+        const tocLinks = toc.map(item =>
+            `<a href="#${esc(item.id)}" class="block text-gray-500 dark:text-carthy-darkMuted hover:text-emerald-800 dark:hover:text-carthy-mint py-0.5">${esc(item.title)}</a>`
+        ).join('');
+        document.getElementById('toc-label').textContent = u.contents;
+        document.getElementById('toc-label-mobile').textContent = u.contents;
+        if (toc.length) {
+            document.getElementById('toc').innerHTML = tocLinks;
+            document.getElementById('toc-mobile-nav').innerHTML = tocLinks;
+            // Desktop: keep hidden + lg:block so it never overlaps on phones
+            tocWrap.className = 'hidden lg:block sticky top-20';
+            // Mobile: accordion only below lg
+            tocMobile.classList.remove('hidden');
+        } else {
+            tocWrap.className = 'hidden sticky top-20';
+            tocMobile.classList.add('hidden');
+            document.getElementById('toc').innerHTML = '';
+            document.getElementById('toc-mobile-nav').innerHTML = '';
+        }
+
+        const videoWrap = document.getElementById('video-wrap');
+        if (r.resource_type === 'video' && r.youtube_embed_id) {
+            videoWrap.classList.remove('hidden');
+            videoWrap.innerHTML = `<iframe class="w-full h-full"
+                src="https://www.youtube.com/embed/${esc(r.youtube_embed_id)}?rel=0"
+                title="${esc(r.title)}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                loading="lazy"></iframe>`;
+        } else {
+            videoWrap.classList.add('hidden');
+            videoWrap.innerHTML = '';
+        }
+
+        const pdfWrap = document.getElementById('pdf-wrap');
+        if (r.resource_type === 'download' && r.pdf_url) {
+            pdfWrap.classList.remove('hidden');
+            pdfWrap.innerHTML = `<div class="bg-white dark:bg-carthy-darkSurface rounded-2xl border border-gray-100 dark:border-carthy-darkBorder p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <h2 class="font-display text-xl font-bold">PDF</h2>
+                    <a href="${esc(r.pdf_url)}" download class="inline-flex items-center gap-2 bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink font-bold text-sm px-5 py-3 rounded-xl">${esc(r.cta_label)}</a>
+                </div>
+                <iframe src="${esc(r.pdf_url)}" class="w-full h-[28rem] rounded-xl border border-gray-100 dark:border-carthy-darkBorder" title="PDF preview" loading="lazy"></iframe>
+            </div>`;
+        } else {
+            pdfWrap.classList.add('hidden');
+            pdfWrap.innerHTML = '';
+        }
+
+        document.getElementById('support-title').textContent = u.supportTitle;
+        document.getElementById('support-text').textContent = u.supportText;
+        document.getElementById('support-sub').textContent = u.supportSub;
+        document.getElementById('support-cta').textContent = u.supportCta;
+        document.getElementById('sources-title').textContent = u.sources;
+        document.getElementById('related-title').textContent = u.related;
+
+        const sources = r.sources || [];
+        document.getElementById('sources').innerHTML = sources.length ? sources.map(s => `
+            <li class="bg-white dark:bg-carthy-darkSurface rounded-xl border border-gray-100 dark:border-carthy-darkBorder px-4 py-3">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex items-start gap-3 min-w-0">
+                        <i class="fa-solid fa-link text-carthy-mint mt-0.5 shrink-0" aria-hidden="true"></i>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">${esc(u.sourceLabel)}</p>
+                            <p class="text-sm font-bold">${esc(s.name)}</p>
+                            ${s.author ? `<p class="text-[11px] text-gray-400">${u.author}: ${esc(s.author)}</p>` : ''}
+                            ${s.date ? `<p class="text-[11px] text-gray-400">${u.date}: ${esc(s.date)}</p>` : ''}
+                        </div>
+                    </div>
+                    ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-carthy-mint hover:underline shrink-0">${esc(u.visit)}</a>` : ''}
+                </div>
+            </li>`).join('') : `<li class="text-sm text-gray-400">—</li>`;
+
+        document.getElementById('related').innerHTML = related.map(item => `
+            <a href="${esc(item.detail_url)}" class="group bg-white dark:bg-carthy-darkSurface rounded-2xl border border-gray-100 dark:border-carthy-darkBorder shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all">
+                <div class="aspect-[16/10] overflow-hidden bg-carthy-mintLight">
+                    <img src="${esc(item.cover_image)}" alt="${esc(item.title || 'Related resource')}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold text-sm line-clamp-2 mb-2">${esc(item.title)}</h3>
+                    <p class="text-[11px] text-gray-400 mb-3">${item.reading_time} ${u.min}</p>
+                    <span class="text-[11px] font-bold text-emerald-800 dark:text-carthy-mint">${esc(item.cta_label)}</span>
+                </div>
+            </a>`).join('') || `<p class="text-sm text-gray-400 col-span-full">—</p>`;
+    }
+
+    document.getElementById('btn-lang').addEventListener('click', () => {
+        lang = lang === 'en' ? 'es' : 'en';
+        localStorage.setItem('carthy-lang', lang);
+        render();
+    });
+
+    render();
+    </script>
+</body>
+</html>

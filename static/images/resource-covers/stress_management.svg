@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Stress Management">
+  <defs>
+    <linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F3E9DC"/>
+      <stop offset="100%" stop-color="#B9DACD"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <rect x="220" y="140" width="220" height="280" rx="18" fill="#FFFFFF" opacity=".7"/>
+  <rect x="250" y="180" width="160" height="12" rx="6" fill="#B9DACD"/>
+  <rect x="250" y="210" width="120" height="10" rx="5" fill="#DBEDE2"/>
+  <rect x="250" y="235" width="140" height="10" rx="5" fill="#DBEDE2"/>
+  <circle cx="520" cy="220" r="70" fill="#FFFFFF" opacity=".65"/>
+  <path d="M490 220 h60 M520 190 v60" stroke="#7FA997" stroke-width="8" stroke-linecap="round"/>
+  <path d="M560 300 q40 20 80 -10" fill="none" stroke="#F6C7B6" stroke-width="10" stroke-linecap="round"/>
+</svg>

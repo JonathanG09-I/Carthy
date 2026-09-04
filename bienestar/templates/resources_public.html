@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources — Carthy Wellness Hub</title>
+    <meta name="theme-color" content="#B9DACD">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        carthy: {
+                            mint: '#B9DACD', mintLight: '#DBEDE2', bg: '#F1F0F5', ink: '#222222',
+                            darkBg: '#17181A', darkSurface: '#212226', darkSurface2: '#2A2B30',
+                            darkBorder: '#34353A', darkText: '#ECECEC', darkMuted: '#9B9CA1',
+                        }
+                    },
+                    fontFamily: { display: ['Fraunces', 'Georgia', 'serif'], body: ['Lato', 'sans-serif'] }
+                }
+            }
+        };
+        if (localStorage.getItem('carthy-theme') === 'dark') document.documentElement.classList.add('dark');
+    </script>
+    <style>
+        body { font-family: 'Lato', sans-serif; background: #F1F0F5; color: #222; }
+        html.dark body { background: #17181A; color: #ECECEC; }
+        .font-display { font-family: 'Fraunces', Georgia, serif; }
+        .resource-card { transition: transform .25s ease, box-shadow .25s ease; }
+        .resource-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(34,34,34,.09); }
+        .cat-chip { transition: background .2s ease, color .2s ease, border-color .2s ease; }
+        .cat-chip.active { background: #B9DACD; color: #222; font-weight: 700; border-color: transparent; }
+        .fade-in { animation: fadeIn .4s ease both; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .skeleton {
+            background: linear-gradient(90deg, #e8e8ea 25%, #f3f3f4 50%, #e8e8ea 75%);
+            background-size: 200% 100%; animation: shimmer 1.2s ease-in-out infinite; border-radius: .75rem;
+        }
+        html.dark .skeleton {
+            background: linear-gradient(90deg, #2A2B30 25%, #34353A 50%, #2A2B30 75%);
+            background-size: 200% 100%;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        :focus-visible { outline: 2px solid #B9DACD; outline-offset: 2px; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-carthy-darkSurface/95 backdrop-blur border-b border-gray-100 dark:border-carthy-darkBorder">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+            <a href="/" class="font-display text-lg font-bold tracking-tight">Carthy</a>
+            <div class="flex items-center gap-2">
+                <button type="button" id="btn-lang" class="text-xs font-bold px-3 py-2 rounded-xl bg-carthy-mintLight dark:bg-carthy-darkSurface2" aria-label="Toggle language">EN</button>
+                <a href="/app/" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink" data-i18n="login">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <div class="max-w-3xl mb-8 fade-in">
+            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-2" data-i18n="eyebrow">Wellness Hub</p>
+            <h1 class="font-display text-3xl sm:text-4xl font-extrabold mb-3" data-i18n="title">Resources</h1>
+            <p class="text-sm sm:text-base text-gray-500 dark:text-carthy-darkMuted leading-relaxed" data-i18n="intro">
+                Explore trusted articles, videos, and wellness guides designed to help students improve their emotional well-being, academic success, and daily habits.
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+            <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
+                <input id="search" type="search" class="w-full bg-white dark:bg-carthy-darkSurface border border-gray-100 dark:border-carthy-darkBorder rounded-2xl py-3.5 pl-11 pr-4 text-sm shadow-sm outline-none focus:ring-2 focus:ring-carthy-mint"
+                       placeholder="Search by title, keyword, or category..." aria-label="Search resources">
+            </div>
+            <div id="stats" class="text-[11px] text-gray-400 dark:text-carthy-darkMuted whitespace-nowrap sm:text-right"></div>
+        </div>
+
+        <div id="categories" class="flex flex-wrap gap-2 mb-8" role="tablist" aria-label="Resource categories"></div>
+        <div id="featured" class="mb-10 hidden"></div>
+        <div id="recent-wrap" class="mb-8 hidden">
+            <h2 class="font-bold text-sm mb-3" data-i18n-sec="recent">Recent</h2>
+            <div id="recent" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+        </div>
+        <div id="popular-wrap" class="mb-8 hidden">
+            <h2 class="font-bold text-sm mb-3" data-i18n-sec="popular">Popular</h2>
+            <div id="popular" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+        </div>
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </main>
+
+    <script>
+    const I18N = {
+        en: {
+            eyebrow: 'Wellness Hub', title: 'Resources',
+            intro: 'Explore trusted articles, videos, and wellness guides designed to help students improve their emotional well-being, academic success, and daily habits.',
+            search: 'Search by title, keyword, or category...', login: 'Login', all: 'All',
+            featured: 'Featured', empty: 'No resources match your search.',
+            resources: 'Resources', updated: 'Updated Weekly', min: 'min', by: 'By',
+            recent: 'Recent', popular: 'Popular',
+        },
+        es: {
+            eyebrow: 'Wellness Hub', title: 'Recursos',
+            intro: 'Explora artículos, videos y guías de bienestar diseñados para ayudar a los estudiantes a mejorar su bienestar emocional, éxito académico y hábitos diarios.',
+            search: 'Busca por título, palabra clave o categoría...', login: 'Iniciar sesión', all: 'Todos',
+            featured: 'Destacado', empty: 'No hay recursos que coincidan con tu búsqueda.',
+            resources: 'Recursos', updated: 'Actualizado semanalmente', min: 'min', by: 'Por',
+            recent: 'Recientes', popular: 'Populares',
+        }
+    };
+
+    let lang = localStorage.getItem('carthy-lang') || 'en';
+    let category = 'all';
+    let timer = null;
+
+    function t(k) { return (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k; }
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function applyChrome() {
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            if (I18N[lang][k]) el.textContent = I18N[lang][k];
+        });
+        document.getElementById('search').placeholder = t('search');
+        document.getElementById('btn-lang').textContent = lang.toUpperCase();
+    }
+
+    function tagsOf(r) {
+        if (Array.isArray(r.tags) && r.tags.length) return r.tags.slice(0, 4);
+        if (r.keywords) return String(r.keywords).split(',').map(x => x.trim()).filter(Boolean).slice(0, 4);
+        return [];
+    }
+
+    function card(r) {
+        const tags = tagsOf(r);
+        const tagsHtml = tags.length
+            ? `<div class="flex flex-wrap gap-1 mt-2">${tags.map(tg => `<span class="text-[9px] px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-carthy-darkSurface2 text-gray-500">${esc(tg)}</span>`).join('')}</div>`
+            : '';
+        return `<article class="resource-card fade-in bg-white dark:bg-carthy-darkSurface rounded-2xl border border-gray-100 dark:border-carthy-darkBorder shadow-sm overflow-hidden flex flex-col min-w-0">
+            <div class="aspect-[16/10] bg-carthy-mintLight overflow-hidden">
+                <img src="${esc(r.cover_image)}" alt="${esc(r.title || 'Carthy resource')}" loading="lazy" class="w-full h-full object-cover">
+            </div>
+            <div class="p-4 flex flex-col flex-1 min-w-0">
+                <div class="flex flex-wrap gap-1.5 mb-2">
+                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-carthy-mintLight text-emerald-900 dark:bg-carthy-mint/20 dark:text-carthy-mint">${esc(r.category_label)}</span>
+                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gray-100 dark:bg-carthy-darkSurface2 text-gray-500">${esc(r.resource_type_label)}</span>
+                </div>
+                <h2 class="font-bold text-sm leading-snug line-clamp-2">${esc(r.title)}</h2>
+                <p class="text-[11px] text-gray-500 dark:text-carthy-darkMuted mt-2 line-clamp-2 flex-1">${esc(r.short_description)}</p>
+                ${tagsHtml}
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-400 mt-3">
+                    <span class="truncate">${t('by')} ${esc(r.author)}</span>
+                    <span>${r.reading_time} ${t('min')}</span>
+                    <span>${esc(lang==='es' && r.publication_date_es ? r.publication_date_es : r.publication_date)}</span>
+                </div>
+                <a href="${esc(r.detail_url)}" class="mt-4 inline-flex items-center justify-center w-full bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink font-bold text-xs py-2.5 rounded-xl hover:opacity-90">${esc(r.cta_label)}</a>
+            </div>
+        </article>`;
+    }
+
+    function skeleton(n) {
+        return Array.from({length:n}, () => `<div class="rounded-2xl border border-gray-100 dark:border-carthy-darkBorder overflow-hidden"><div class="aspect-[16/10] skeleton"></div><div class="p-4 space-y-2"><div class="h-3 w-1/3 skeleton"></div><div class="h-4 w-4/5 skeleton"></div><div class="h-3 w-full skeleton"></div></div></div>`).join('');
+    }
+
+    function paintSection(wrapId, gridId, list, labelKey) {
+        const wrap = document.getElementById(wrapId);
+        const grid = document.getElementById(gridId);
+        if (!wrap || !grid) return;
+        const h = wrap.querySelector('h2');
+        if (h) h.textContent = t(labelKey);
+        if (!list || !list.length) { wrap.classList.add('hidden'); grid.innerHTML = ''; return; }
+        wrap.classList.remove('hidden');
+        grid.innerHTML = list.map(card).join('');
+    }
+
+    async function load() {
+        const q = document.getElementById('search').value.trim();
+        const grid = document.getElementById('grid');
+        grid.innerHTML = skeleton(6);
+        const params = new URLSearchParams({ lang });
+        if (q) params.set('q', q);
+        if (category !== 'all') params.set('category', category);
+        const res = await fetch('/api/resources/?' + params.toString());
+        const data = await res.json();
+        if (!res.ok || data.status !== 'success') return;
+
+        document.getElementById('stats').innerHTML = `<strong class="text-carthy-ink dark:text-carthy-darkText">${data.total_published}</strong> ${t('resources')}<br><span>${t('updated')}</span>`;
+
+        const cats = [`<button type="button" class="cat-chip ${category==='all'?'active':''} text-xs px-3.5 py-2 rounded-full bg-white dark:bg-carthy-darkSurface border border-gray-100 dark:border-carthy-darkBorder" data-cat="all">${t('all')}</button>`]
+            .concat((data.categories||[]).map(c => `<button type="button" class="cat-chip ${category===c.id?'active':''} text-xs px-3.5 py-2 rounded-full bg-white dark:bg-carthy-darkSurface border border-gray-100 dark:border-carthy-darkBorder" data-cat="${esc(c.id)}">${esc(c.label)}</button>`));
+        document.getElementById('categories').innerHTML = cats.join('');
+        document.querySelectorAll('.cat-chip').forEach(btn => btn.addEventListener('click', () => { category = btn.dataset.cat; load(); }));
+
+        const f = data.featured;
+        const featuredEl = document.getElementById('featured');
+        const browsingAll = !q && category === 'all';
+        if (f && browsingAll) {
+            featuredEl.classList.remove('hidden');
+            featuredEl.innerHTML = `<div class="fade-in grid md:grid-cols-2 gap-0 bg-white dark:bg-carthy-darkSurface rounded-3xl overflow-hidden border border-gray-100 dark:border-carthy-darkBorder shadow-sm">
+                <div class="aspect-[16/10] md:aspect-auto md:min-h-[280px]"><img src="${esc(f.cover_image)}" alt="${esc(f.title || 'Featured resource')}" class="w-full h-full object-cover" loading="lazy"></div>
+                <div class="p-6 md:p-8 flex flex-col justify-center min-w-0">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-carthy-mint mb-2">${t('featured')} · ${esc(f.category_label)}</span>
+                    <h2 class="font-display text-2xl font-bold leading-snug mb-3">${esc(f.title)}</h2>
+                    <p class="text-sm text-gray-500 dark:text-carthy-darkMuted line-clamp-3 mb-4">${esc(f.short_description)}</p>
+                    <div class="text-[11px] text-gray-400 flex flex-wrap gap-3 mb-5"><span>${f.reading_time} ${t('min')}</span><span>${t('by')} ${esc(f.author)}</span><span>${esc(lang==='es' && f.publication_date_es ? f.publication_date_es : f.publication_date)}</span></div>
+                    <a href="${esc(f.detail_url)}" class="self-start inline-flex bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink font-bold text-xs px-5 py-2.5 rounded-xl">${esc(f.cta_label)}</a>
+                </div>
+            </div>`;
+        } else {
+            featuredEl.classList.add('hidden');
+            featuredEl.innerHTML = '';
+        }
+
+        paintSection('recent-wrap', 'recent', browsingAll ? (data.recent || []) : [], 'recent');
+        paintSection('popular-wrap', 'popular', browsingAll ? (data.popular || []) : [], 'popular');
+
+        if (!(data.resources||[]).length) {
+            grid.innerHTML = `<p class="col-span-full text-center text-sm text-gray-400 py-16">${t('empty')}</p>`;
+        } else {
+            grid.innerHTML = data.resources.map(card).join('');
+        }
+    }
+
+    document.getElementById('btn-lang').addEventListener('click', () => {
+        lang = lang === 'en' ? 'es' : 'en';
+        localStorage.setItem('carthy-lang', lang);
+        applyChrome();
+        load();
+    });
+    document.getElementById('search').addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(load, 280);
+    });
+
+    applyChrome();
+    load();
+    </script>
+
+    <footer class="border-t border-gray-100 dark:border-carthy-darkBorder mt-10 py-6 text-center text-[11px] text-gray-400 dark:text-carthy-darkMuted">
+        <p>© 2026 Carthy Academic Project · Version 1.0</p>
+    </footer>
+</body>
+</html>

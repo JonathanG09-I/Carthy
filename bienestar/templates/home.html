@@ -1,0 +1,1196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carthy — Supporting Student Well-being</title>
+    <meta name="description" content="Carthy connects students with trained listeners through secure active listening sessions, wellness tools, and educational resources.">
+    <meta name="theme-color" content="#B9DACD">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Titles: Fraunces as web-safe stand-in for Black Mango; Body: Lato -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        carthy: {
+                            mint: '#B9DACD',
+                            mintLight: '#DBEDE2',
+                            bg: '#F1F0F5',
+                            white: '#FFFFFF',
+                            ink: '#222222',
+                            darkBg: '#17181A',
+                            darkSurface: '#212226',
+                            darkSurface2: '#2A2B30',
+                            darkBorder: '#34353A',
+                            darkText: '#ECECEC',
+                            darkMuted: '#9B9CA1',
+                            sage: '#C7D9CC',
+                            sky: '#BFD7EA',
+                            sand: '#F3E9DC',
+                            peach: '#F6C7B6',
+                            lavender: '#DCCFED',
+                        }
+                    },
+                    fontFamily: {
+                        display: ['Fraunces', 'Georgia', 'serif'],
+                        body: ['Lato', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Lato', sans-serif; background: #F1F0F5; color: #222222; }
+        html.dark body { background: #17181A; color: #ECECEC; }
+        .font-display { font-family: 'Fraunces', Georgia, serif; }
+        .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+        .reveal.visible { opacity: 1; transform: none; }
+        .organic-blob {
+            background: radial-gradient(ellipse at 30% 20%, rgba(185,218,205,.55), transparent 55%),
+                        radial-gradient(ellipse at 80% 70%, rgba(219,237,226,.7), transparent 50%),
+                        radial-gradient(ellipse at 10% 90%, rgba(243,233,220,.45), transparent 45%);
+        }
+        html.dark .organic-blob {
+            background: radial-gradient(ellipse at 30% 20%, rgba(127,169,151,.2), transparent 55%),
+                        radial-gradient(ellipse at 80% 70%, rgba(191,215,234,.12), transparent 50%),
+                        #17181A;
+        }
+        .nav-link { position: relative; transition: color .2s ease; }
+        .nav-link::after {
+            content: ''; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px;
+            background: #B9DACD; transition: width .25s ease;
+        }
+        .nav-link:hover { color: #222222; }
+        html.dark .nav-link:hover { color: #ECECEC; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: #222222; }
+        html.dark .nav-link.active { color: #B9DACD; }
+
+        /* Navbar: transparente sobre el hero → sólido al scrollear */
+        #site-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 50;
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            box-shadow: none;
+            transition: background-color .35s ease, box-shadow .35s ease, border-color .35s ease, backdrop-filter .35s ease;
+        }
+        #site-nav.is-scrolled {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom-color: rgba(34, 34, 34, 0.06);
+            box-shadow: 0 8px 28px -18px rgba(34, 34, 34, 0.28);
+        }
+        html.dark #site-nav.is-scrolled {
+            background: rgba(33, 34, 38, 0.94);
+            border-bottom-color: #34353A;
+            box-shadow: 0 8px 28px -18px rgba(0, 0, 0, 0.55);
+        }
+        #mobile-menu {
+            background: rgba(255, 255, 255, 0.98);
+        }
+        html.dark #mobile-menu {
+            background: rgba(23, 24, 26, 0.98);
+        }
+        #site-nav:not(.is-scrolled) #mobile-menu {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+
+        .faq-panel { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+        .faq-item.open .faq-panel { max-height: 220px; }
+        .faq-item.open .faq-chevron { transform: rotate(180deg); }
+        .value-card {
+            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+        }
+        .value-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px -18px rgba(34,34,34,.22);
+            border-color: rgba(185,218,205,.7);
+        }
+        html.dark .value-card:hover {
+            box-shadow: 0 14px 28px -18px rgba(0,0,0,.45);
+            border-color: rgba(185,218,205,.25);
+        }
+        :focus-visible {
+            outline: 2px solid #B9DACD;
+            outline-offset: 2px;
+        }
+        .field-error { color: #b45309; font-size: 11px; margin-top: 4px; }
+        .input-invalid { border-color: #f0c4ac !important; }
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+            #site-nav { transition: none; }
+            .value-card { transition: none; }
+            .value-card:hover { transform: none; }
+        }
+    </style>
+    <script>
+        (function () {
+            const tema = localStorage.getItem('carthy-theme');
+            const darkSO = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (tema === 'dark' || (!tema && darkSO)) document.documentElement.classList.add('dark');
+        })();
+    </script>
+</head>
+<body class="font-body antialiased">
+    {% csrf_token %}
+
+    <!-- ========== NAV ========== -->
+    <header id="site-nav">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 md:h-[4.25rem] flex items-center justify-between gap-4">
+            <a href="#hero" class="flex items-center gap-2 shrink-0 group" aria-label="Carthy Home">
+                <img src="{% static 'images/logo_carthy_icon.png' %}" alt="" class="w-8 h-8 object-contain dark:invert" width="32" height="32" onerror="this.style.display='none'">
+                <span class="font-display font-extrabold text-xl tracking-tight text-carthy-ink dark:text-carthy-darkText group-hover:opacity-80 transition">Carthy</span>
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-4 xl:gap-5 text-[13px] font-semibold text-carthy-ink/65 dark:text-carthy-darkMuted" aria-label="Primary">
+                <a href="#hero" class="nav-link active" data-nav="hero" data-i18n="nav_home">Home</a>
+                <a href="#about" class="nav-link" data-nav="about" data-i18n="nav_about">About Carthy</a>
+                <a href="#features" class="nav-link" data-nav="features" data-i18n="nav_features">Features</a>
+                <a href="#wellness" class="nav-link" data-nav="wellness" data-i18n="nav_wellness">Wellness Hub</a>
+                <a href="#resources" class="nav-link" data-nav="resources" data-i18n="nav_resources">Resources</a>
+                <a href="#faq" class="nav-link" data-nav="faq" data-i18n="nav_faq">FAQ</a>
+                <a href="#contact" class="nav-link" data-nav="contact" data-i18n="nav_contact">Contact</a>
+            </nav>
+
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <button type="button" id="btn-lang" class="w-8 h-8 rounded-full border border-carthy-ink/20 dark:border-carthy-darkBorder text-[10px] font-bold text-carthy-ink dark:text-carthy-darkText hover:border-carthy-mint transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-carthy-mint" title="Language" aria-label="Toggle language">EN</button>
+                <button type="button" id="btn-theme" class="w-8 h-8 rounded-full text-carthy-ink dark:text-carthy-darkText hover:opacity-70 transition" title="Theme" aria-label="Toggle dark mode">
+                    <i id="icon-theme" class="fa-solid fa-moon"></i>
+                </button>
+
+                <!-- Guest CTAs -->
+                <div id="nav-guest" class="flex items-center gap-2 sm:gap-3">
+                    <a href="/app/" class="hidden sm:inline-flex text-xs font-bold text-carthy-ink dark:text-carthy-darkText hover:text-emerald-800 dark:hover:text-carthy-mint px-2 transition" data-i18n="btn_login">Login</a>
+                    <a href="/app/" class="hidden sm:inline-flex text-xs font-bold bg-carthy-mintLight text-carthy-ink px-3 py-2 rounded-xl hover:bg-carthy-mint transition" data-i18n="btn_register">Register</a>
+                    <a href="/app/" class="inline-flex items-center bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink text-xs font-bold px-3.5 py-2.5 rounded-xl hover:opacity-90 transition shadow-sm" data-i18n="btn_get_started">Get Started</a>
+                </div>
+
+                <!-- Authenticated CTA -->
+                <div id="nav-auth" class="hidden">
+                    <a href="/app/" class="inline-flex items-center gap-2 bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink text-xs font-bold px-4 py-2.5 rounded-xl hover:opacity-90 transition shadow-sm">
+                        <i class="fa-solid fa-table-columns text-[11px]"></i>
+                        <span data-i18n="btn_go_dashboard">Go to Dashboard</span>
+                    </a>
+                </div>
+
+                <button type="button" id="btn-menu" class="lg:hidden w-9 h-9 flex items-center justify-center text-carthy-ink dark:text-carthy-darkText" aria-label="Open menu" aria-expanded="false">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-black/5 dark:border-carthy-darkBorder px-4 py-4 space-y-1">
+            <a href="#hero" class="block py-2.5 text-sm font-semibold" data-i18n="nav_home">Home</a>
+            <a href="#about" class="block py-2.5 text-sm font-semibold" data-i18n="nav_about">About Carthy</a>
+            <a href="#features" class="block py-2.5 text-sm font-semibold" data-i18n="nav_features">Features</a>
+            <a href="#wellness" class="block py-2.5 text-sm font-semibold" data-i18n="nav_wellness">Wellness Hub</a>
+            <a href="#resources" class="block py-2.5 text-sm font-semibold" data-i18n="nav_resources">Resources</a>
+            <a href="#faq" class="block py-2.5 text-sm font-semibold" data-i18n="nav_faq">FAQ</a>
+            <a href="#contact" class="block py-2.5 text-sm font-semibold" data-i18n="nav_contact">Contact</a>
+            <div id="mobile-guest" class="pt-3 flex gap-2">
+                <a href="/app/" class="flex-1 text-center text-xs font-bold border border-carthy-ink/15 dark:border-carthy-darkBorder py-2.5 rounded-xl" data-i18n="btn_login">Login</a>
+                <a href="/app/" class="flex-1 text-center text-xs font-bold bg-carthy-mint text-carthy-ink py-2.5 rounded-xl" data-i18n="btn_register">Register</a>
+            </div>
+            <div id="mobile-auth" class="hidden pt-3">
+                <a href="/app/" class="block text-center text-xs font-bold bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink py-2.5 rounded-xl" data-i18n="btn_go_dashboard">Go to Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="top">
+        <!-- ========== HERO ========== -->
+        <section id="hero" class="relative overflow-hidden organic-blob pt-16 md:pt-[4.25rem]">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 md:pt-20 md:pb-24 grid md:grid-cols-2 gap-10 md:gap-14 items-center">
+                <div class="reveal">
+                    <p class="font-display text-4xl sm:text-5xl md:text-[3.25rem] leading-[1.12] font-extrabold tracking-tight text-carthy-ink dark:text-carthy-darkText mb-5">
+                        <span class="block text-carthy-ink/90 dark:text-carthy-darkText">Carthy</span>
+                        <span class="block mt-2" data-i18n="hero_title">Supporting Student Well-being, One Conversation at a Time.</span>
+                    </p>
+                    <p class="text-base sm:text-lg text-carthy-ink/60 dark:text-carthy-darkMuted max-w-md leading-relaxed mb-8" data-i18n="hero_sub">
+                        Secure active listening, wellness tools, and human connection—built for educational communities.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="/app/" class="inline-flex items-center justify-center bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink font-bold text-sm px-6 py-3.5 rounded-2xl hover:opacity-90 transition active:scale-[0.99]" data-i18n="btn_get_started">Get Started</a>
+                        <a href="#about" class="inline-flex items-center justify-center bg-white/70 dark:bg-carthy-darkSurface border border-black/5 dark:border-carthy-darkBorder font-bold text-sm px-6 py-3.5 rounded-2xl hover:bg-white dark:hover:bg-carthy-darkSurface2 transition" data-i18n="btn_learn_more">Learn More</a>
+                    </div>
+                </div>
+
+                <!-- Dominant visual: SVG illustration -->
+                <div class="reveal relative" style="transition-delay:.12s">
+                    <div class="aspect-[4/3] md:aspect-square rounded-[2rem] bg-gradient-to-br from-carthy-mint via-carthy-mintLight to-carthy-sand dark:from-[#2a3832] dark:via-carthy-darkSurface dark:to-carthy-darkSurface2 overflow-hidden relative shadow-[0_24px_60px_-28px_rgba(34,34,34,.25)]">
+                        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle cx="240" cy="240" r="160" fill="#FFFFFF" fill-opacity=".35"/>
+                            <circle cx="240" cy="240" r="110" fill="#DBEDE2" fill-opacity=".8"/>
+                            <ellipse cx="190" cy="210" rx="42" ry="48" fill="#B9DACD"/>
+                            <ellipse cx="290" cy="210" rx="42" ry="48" fill="#C7D9CC"/>
+                            <path d="M150 300c20-40 60-60 90-60s70 20 90 60" stroke="#222222" stroke-opacity=".15" stroke-width="8" stroke-linecap="round"/>
+                            <path d="M175 185c8-18 28-18 36 0" stroke="#222" stroke-opacity=".2" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M270 185c8-18 28-18 36 0" stroke="#222" stroke-opacity=".2" stroke-width="3" stroke-linecap="round"/>
+                            <circle cx="360" cy="120" r="28" fill="#BFD7EA" fill-opacity=".7"/>
+                            <circle cx="100" cy="340" r="22" fill="#F6C7B6" fill-opacity=".65"/>
+                            <circle cx="380" cy="360" r="16" fill="#DCCFED" fill-opacity=".7"/>
+                        </svg>
+                        <div class="absolute bottom-6 left-6 right-6 bg-white/80 dark:bg-carthy-darkSurface/85 backdrop-blur-sm rounded-2xl px-5 py-4 border border-white/50 dark:border-carthy-darkBorder">
+                            <p class="font-display font-bold text-sm text-carthy-ink dark:text-carthy-darkText" data-i18n="hero_visual_caption">A calm space to be heard.</p>
+                            <p class="text-xs text-carthy-ink/55 dark:text-carthy-darkMuted mt-1" data-i18n="hero_visual_sub">Confidential sessions · Wellness tools · Real support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value proposition (V1.0 — no fictional metrics; swap for live stats later) -->
+        <section id="value-props" class="border-y border-black/5 dark:border-carthy-darkBorder bg-white/60 dark:bg-carthy-darkSurface/40" aria-labelledby="value-props-heading" data-section="value-props">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+                <h2 id="value-props-heading" class="sr-only" data-i18n="value_section_title">What Carthy offers</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                <article class="value-card reveal rounded-2xl bg-white dark:bg-carthy-darkSurface border border-black/[0.04] dark:border-carthy-darkBorder p-5 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-carthy-mintLight dark:bg-carthy-darkSurface2 flex items-center justify-center text-emerald-800 dark:text-carthy-mint mb-3" aria-hidden="true">
+                        <i class="fa-solid fa-ear-listen"></i>
+                    </div>
+                    <h3 class="font-bold text-sm mb-1.5" data-i18n="value_listen_title">Active Listening</h3>
+                    <p class="text-[11px] text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed" data-i18n="value_listen_desc">Safe and respectful conversations where students can express themselves freely and feel heard.</p>
+                </article>
+                <article class="value-card reveal rounded-2xl bg-white dark:bg-carthy-darkSurface border border-black/[0.04] dark:border-carthy-darkBorder p-5 text-left" style="transition-delay:.05s">
+                    <div class="w-10 h-10 rounded-xl bg-carthy-sky/40 dark:bg-carthy-darkSurface2 flex items-center justify-center text-blue-800 dark:text-carthy-sky mb-3" aria-hidden="true">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <h3 class="font-bold text-sm mb-1.5" data-i18n="value_wellbeing_title">Student Well-being</h3>
+                    <p class="text-[11px] text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed" data-i18n="value_wellbeing_desc">Designed to support emotional health and promote a healthier academic experience.</p>
+                </article>
+                <article class="value-card reveal rounded-2xl bg-white dark:bg-carthy-darkSurface border border-black/[0.04] dark:border-carthy-darkBorder p-5 text-left" style="transition-delay:.1s">
+                    <div class="w-10 h-10 rounded-xl bg-carthy-sand dark:bg-carthy-darkSurface2 flex items-center justify-center text-amber-800 dark:text-carthy-sand mb-3" aria-hidden="true">
+                        <i class="fa-solid fa-shield-heart"></i>
+                    </div>
+                    <h3 class="font-bold text-sm mb-1.5" data-i18n="value_privacy_title">Privacy & Confidentiality</h3>
+                    <p class="text-[11px] text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed" data-i18n="value_privacy_desc">Every conversation is treated with confidentiality, empathy, and respect.</p>
+                </article>
+                <article class="value-card reveal rounded-2xl bg-white dark:bg-carthy-darkSurface border border-black/[0.04] dark:border-carthy-darkBorder p-5 text-left" style="transition-delay:.15s">
+                    <div class="w-10 h-10 rounded-xl bg-carthy-mintLight dark:bg-carthy-darkSurface2 flex items-center justify-center text-emerald-800 dark:text-carthy-mint mb-3" aria-hidden="true">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="font-bold text-sm mb-1.5" data-i18n="value_resources_title">Educational Resources</h3>
+                    <p class="text-[11px] text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed" data-i18n="value_resources_desc">Access trusted articles and practical guides that encourage emotional well-being and healthy habits.</p>
+                </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== ABOUT ========== -->
+        <section id="about" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-28">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="reveal order-2 md:order-1">
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-carthy-ink/40 dark:text-carthy-darkMuted mb-3" data-i18n="about_eyebrow">What is Carthy?</p>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold text-carthy-ink dark:text-carthy-darkText mb-5" data-i18n="about_title">A complete student wellness platform</h2>
+                    <p class="text-carthy-ink/65 dark:text-carthy-darkMuted leading-relaxed mb-4" data-i18n="about_p1">
+                        Carthy connects students with trained listeners through active listening sessions in a safe, confidential, and accessible environment.
+                    </p>
+                    <p class="text-carthy-ink/65 dark:text-carthy-darkMuted leading-relaxed mb-4" data-i18n="about_p2">
+                        Created for educational communities, it helps students who need someone to talk to—without stigma, long waits, or complicated processes.
+                    </p>
+                    <p class="text-carthy-ink/65 dark:text-carthy-darkMuted leading-relaxed" data-i18n="about_p3">
+                        Beyond scheduling, Carthy includes mood tracking, secure chat, wellness resources, and tools that support emotional well-being every day.
+                    </p>
+                </div>
+                <div class="reveal order-1 md:order-2">
+                    <div class="rounded-[2rem] bg-carthy-mintLight dark:bg-carthy-darkSurface p-8 md:p-10 min-h-[280px] flex flex-col justify-end relative overflow-hidden">
+                        <div class="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-carthy-mint/60 dark:bg-carthy-mint/20"></div>
+                        <div class="absolute left-8 top-10 w-20 h-20 rounded-full bg-carthy-sky/50"></div>
+                        <p class="relative font-display text-2xl font-bold text-carthy-ink dark:text-carthy-darkText max-w-xs" data-i18n="about_quote">Listen first. Support always.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 md:mt-24 grid md:grid-cols-2 gap-8">
+                <article class="reveal rounded-[1.75rem] bg-white dark:bg-carthy-darkSurface p-8 border border-black/[0.04] dark:border-carthy-darkBorder">
+                    <h3 class="font-display text-xl font-bold mb-3" data-i18n="mission_title">Our Mission</h3>
+                    <p class="text-sm text-carthy-ink/65 dark:text-carthy-darkMuted leading-relaxed" data-i18n="mission_text">
+                        Empower students through accessible emotional support, active listening, and digital wellness solutions.
+                    </p>
+                </article>
+                <article class="reveal rounded-[1.75rem] bg-white dark:bg-carthy-darkSurface p-8 border border-black/[0.04] dark:border-carthy-darkBorder" style="transition-delay:.08s">
+                    <h3 class="font-display text-xl font-bold mb-3" data-i18n="vision_title">Our Vision</h3>
+                    <p class="text-sm text-carthy-ink/65 dark:text-carthy-darkMuted leading-relaxed" data-i18n="vision_text">
+                        Become the leading student wellness platform in educational communities across Panama and, eventually, Latin America.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <!-- ========== PROBLEM ========== -->
+        <section id="problem" class="bg-white/70 dark:bg-carthy-darkSurface/30 py-20 md:py-28">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="max-w-2xl mb-12 reveal">
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-carthy-ink/40 dark:text-carthy-darkMuted mb-3" data-i18n="problem_eyebrow">The Challenge</p>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="problem_title">What many students face</h2>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="problem-grid">
+                    <!-- filled by JS for i18n -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== SOLUTION ========== -->
+        <section id="solution" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-28">
+            <div class="max-w-2xl mb-12 reveal">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-carthy-ink/40 dark:text-carthy-darkMuted mb-3" data-i18n="solution_eyebrow">Our Solution</p>
+                <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="solution_title">How Carthy helps</h2>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" id="solution-grid"></div>
+        </section>
+
+        <!-- ========== WHY CHOOSE ========== -->
+        <section id="why" class="bg-carthy-mintLight/40 dark:bg-carthy-darkSurface/40 py-20 md:py-28">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="max-w-2xl mb-12 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="why_title">Why choose Carthy?</h2>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" id="why-grid"></div>
+            </div>
+        </section>
+
+        <!-- ========== FEATURES ========== -->
+        <section id="features" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-28">
+            <div class="max-w-2xl mb-12 reveal">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-carthy-ink/40 dark:text-carthy-darkMuted mb-3" data-i18n="features_eyebrow">Platform</p>
+                <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="features_title">Everything in one calm place</h2>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="features-grid"></div>
+        </section>
+
+        <!-- ========== WELLNESS HUB ========== -->
+        <section id="wellness" class="py-20 md:py-28 bg-gradient-to-b from-carthy-bg to-carthy-mintLight/50 dark:from-carthy-darkBg dark:to-carthy-darkSurface/50">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="max-w-2xl mb-10 reveal">
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-carthy-ink/40 dark:text-carthy-darkMuted mb-3" data-i18n="wellness_eyebrow">Wellness Hub</p>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4" data-i18n="wellness_title">More than appointments</h2>
+                    <p class="text-carthy-ink/65 dark:text-carthy-darkMuted" data-i18n="wellness_sub">
+                        Daily tools that help students check in, breathe, reflect, and grow—alongside their listening sessions.
+                    </p>
+                </div>
+                <div class="rounded-[2rem] bg-white dark:bg-carthy-darkSurface border border-black/[0.04] dark:border-carthy-darkBorder p-5 sm:p-8 shadow-[0_20px_50px_-30px_rgba(34,34,34,.2)] reveal">
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="wellness-grid"></div>
+                    <div class="mt-6 text-center">
+                        <a href="/resources/" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-800 dark:text-carthy-mint hover:underline" data-i18n="wellness_cta">Explore Resources</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== RESOURCES ========== -->
+        <section id="resources" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-28">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6 reveal">
+                <div class="max-w-xl">
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-carthy-ink/40 dark:text-carthy-darkMuted mb-3" data-i18n="resources_eyebrow">Resources</p>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-3" data-i18n="resources_title">Digital wellness library</h2>
+                    <p class="text-sm text-carthy-ink/60 dark:text-carthy-darkMuted" data-i18n="resources_intro">Explore trusted articles, videos, and wellness guides designed to help students improve their emotional well-being, academic success, and daily habits.</p>
+                </div>
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-carthy-ink/30 text-xs" aria-hidden="true"></i>
+                    <input id="resource-search" type="search" data-i18n-placeholder="resources_search_ph" placeholder="Search resources..."
+                           class="w-full bg-white dark:bg-carthy-darkSurface border border-black/5 dark:border-carthy-darkBorder rounded-xl py-3 pl-9 pr-3 text-sm outline-none focus:border-carthy-mint focus:ring-2 focus:ring-carthy-mint/40" aria-label="Search resources">
+                </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 mb-6 reveal">
+                <div class="flex flex-wrap gap-2" id="resource-filters" role="tablist" aria-label="Categories"></div>
+                <a href="/resources/" class="hidden sm:inline-flex text-xs font-bold text-emerald-800 dark:text-carthy-mint hover:underline shrink-0" data-i18n="view_all_resources">View all resources</a>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="resource-cards"></div>
+        </section>
+
+        <!-- ========== HOW IT WORKS ========== -->
+        <section id="how" class="bg-white/70 dark:bg-carthy-darkSurface/30 py-20 md:py-28">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-14 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="how_title">How Carthy works</h2>
+                </div>
+                <ol class="space-y-0" id="how-timeline"></ol>
+            </div>
+        </section>
+
+        <!-- ========== IMPACT ========== -->
+        <section id="impact" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-28">
+            <div class="max-w-2xl mb-12 reveal">
+                <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="impact_title">Our impact</h2>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="impact-grid"></div>
+        </section>
+
+        <!-- ========== FAQ ========== -->
+        <section id="faq" class="bg-carthy-mintLight/30 dark:bg-carthy-darkSurface/40 py-20 md:py-28">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6">
+                <div class="mb-10 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold" data-i18n="faq_title">Frequently asked questions</h2>
+                </div>
+                <div class="space-y-3" id="faq-list"></div>
+            </div>
+        </section>
+
+        <!-- ========== CONTACT ========== -->
+        <section id="contact" class="max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-28">
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <div class="reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4" data-i18n="contact_title">Contact us</h2>
+                    <p class="text-sm text-carthy-ink/60 dark:text-carthy-darkMuted mb-4 max-w-md" data-i18n="contact_academic">Carthy is currently an academic project developed by students. The contact form is available for demonstrations and feedback.</p>
+                    <p class="text-sm text-carthy-ink/60 dark:text-carthy-darkMuted mb-8 max-w-md" data-i18n="contact_intro">Send us a message. We read every note carefully and will get back to you when we can.</p>
+
+                    <div class="flex items-start gap-3 text-sm text-carthy-ink/70 dark:text-carthy-darkMuted mb-8">
+                        <span class="w-10 h-10 rounded-xl bg-carthy-mintLight dark:bg-carthy-darkSurface2 flex items-center justify-center shrink-0" aria-hidden="true">
+                            <i class="fa-solid fa-location-dot text-emerald-800 dark:text-carthy-mint"></i>
+                        </span>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-carthy-ink/40 dark:text-carthy-darkMuted" data-i18n="contact_location_label">Location</p>
+                            <p class="font-semibold" data-i18n="contact_location">Colón, Panamá</p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[1.75rem] overflow-hidden border border-black/[0.04] dark:border-carthy-darkBorder bg-gradient-to-br from-carthy-mintLight via-carthy-sky/30 to-carthy-sand/50 dark:from-carthy-darkSurface2 dark:to-carthy-darkSurface aspect-[16/10] flex items-center justify-center">
+                        <img src="{% static 'images/contact-support.svg' %}" alt="Illustration of calm active listening and student emotional support" class="w-full h-full object-contain p-4" loading="lazy" width="640" height="400">
+                    </div>
+                </div>
+
+                <form id="contact-form" class="reveal relative rounded-[1.75rem] bg-white dark:bg-carthy-darkSurface p-6 sm:p-8 border border-black/[0.04] dark:border-carthy-darkBorder space-y-4" style="transition-delay:.08s" novalidate>
+                    <div>
+                        <label for="contact-name" class="block text-xs font-bold mb-1.5" data-i18n="contact_name">Full Name</label>
+                        <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120"
+                               class="w-full bg-carthy-bg dark:bg-carthy-darkSurface2 rounded-xl py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-carthy-mint border border-transparent"
+                               aria-describedby="contact-name-error">
+                        <p id="contact-name-error" class="field-error hidden" role="alert"></p>
+                    </div>
+                    <div>
+                        <label for="contact-email" class="block text-xs font-bold mb-1.5" data-i18n="contact_email">Email</label>
+                        <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254"
+                               class="w-full bg-carthy-bg dark:bg-carthy-darkSurface2 rounded-xl py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-carthy-mint border border-transparent"
+                               aria-describedby="contact-email-error">
+                        <p id="contact-email-error" class="field-error hidden" role="alert"></p>
+                    </div>
+                    <div>
+                        <label for="contact-subject" class="block text-xs font-bold mb-1.5" data-i18n="contact_subject">Subject</label>
+                        <input id="contact-subject" name="subject" type="text" maxlength="200"
+                               class="w-full bg-carthy-bg dark:bg-carthy-darkSurface2 rounded-xl py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-carthy-mint border border-transparent"
+                               aria-describedby="contact-subject-error">
+                        <p id="contact-subject-error" class="field-error hidden" role="alert"></p>
+                    </div>
+                    <div>
+                        <label for="contact-message" class="block text-xs font-bold mb-1.5" data-i18n="contact_message">Message</label>
+                        <textarea id="contact-message" name="message" rows="4" maxlength="5000"
+                                  class="w-full bg-carthy-bg dark:bg-carthy-darkSurface2 rounded-xl py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-carthy-mint border border-transparent resize-none"
+                                  aria-describedby="contact-message-error"></textarea>
+                        <p id="contact-message-error" class="field-error hidden" role="alert"></p>
+                    </div>
+                    <!-- Honeypot: leave empty (hidden from users, bots often fill it) -->
+                    <div class="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+                        <label for="contact-website">Website</label>
+                        <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
+                    <button type="submit" id="contact-submit" class="w-full bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink font-bold text-sm py-3.5 rounded-xl hover:opacity-90 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-carthy-mint" data-i18n="contact_send">Send message</button>
+                    <p id="contact-success" class="hidden text-xs text-emerald-700 dark:text-carthy-mint text-center" role="status" data-i18n="contact_thanks">Thanks — we received your message and will review it soon.</p>
+                    <p id="contact-form-error" class="hidden text-xs text-amber-700 text-center" role="alert"></p>
+                </form>
+            </div>
+        </section>
+
+        <!-- ========== FINAL CTA ========== -->
+        <section class="px-4 sm:px-6 pb-20 md:pb-28">
+            <div class="max-w-6xl mx-auto rounded-[2rem] organic-blob bg-carthy-mint/40 dark:bg-carthy-darkSurface px-6 py-14 md:px-16 md:py-20 text-center reveal border border-white/40 dark:border-carthy-darkBorder">
+                <h2 class="font-display text-3xl md:text-4xl font-bold mb-4 max-w-xl mx-auto" data-i18n="cta_title">Ready to take care of your well-being?</h2>
+                <p class="text-carthy-ink/60 dark:text-carthy-darkMuted max-w-md mx-auto mb-8" data-i18n="cta_sub">Join Carthy today and become part of a healthier, more connected educational community.</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="/app/" class="inline-flex bg-carthy-ink dark:bg-carthy-mint text-white dark:text-carthy-ink font-bold text-sm px-6 py-3.5 rounded-2xl" data-i18n="btn_create_account">Create Account</a>
+                    <a href="/app/" class="inline-flex bg-white/80 dark:bg-carthy-darkSurface2 font-bold text-sm px-6 py-3.5 rounded-2xl border border-black/5 dark:border-carthy-darkBorder" data-i18n="btn_login">Login</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="border-t border-black/5 dark:border-carthy-darkBorder bg-white/50 dark:bg-carthy-darkSurface/50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div>
+                <a href="#hero" class="font-display font-extrabold text-xl">Carthy</a>
+                <p class="text-xs text-carthy-ink/50 dark:text-carthy-darkMuted mt-3 max-w-[14rem]" data-i18n="footer_tagline">Student wellness through listening and care.</p>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider mb-3" data-i18n="footer_links">Quick links</p>
+                <ul class="space-y-2 text-sm text-carthy-ink/60 dark:text-carthy-darkMuted">
+                    <li><a href="#about" class="hover:text-carthy-ink dark:hover:text-carthy-darkText" data-i18n="nav_about">About</a></li>
+                    <li><a href="#features" class="hover:text-carthy-ink dark:hover:text-carthy-darkText" data-i18n="nav_features">Features</a></li>
+                    <li><a href="#wellness" class="hover:text-carthy-ink dark:hover:text-carthy-darkText" data-i18n="nav_wellness">Wellness Hub</a></li>
+                    <li><a href="#faq" class="hover:text-carthy-ink dark:hover:text-carthy-darkText" data-i18n="nav_faq">FAQ</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider mb-3" data-i18n="footer_resources">Resources</p>
+                <ul class="space-y-2 text-sm text-carthy-ink/60 dark:text-carthy-darkMuted">
+                    <li><a href="/resources/" class="hover:text-carthy-ink dark:hover:text-carthy-darkText" data-i18n="nav_resources">Library</a></li>
+                    <li><span class="text-carthy-ink/45" data-i18n="footer_privacy">Privacy Policy</span></li>
+                    <li><span class="text-carthy-ink/45" data-i18n="footer_terms">Terms of Use</span></li>
+                    <li><span class="text-carthy-ink/45" data-i18n="footer_a11y">Accessibility Statement</span></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider mb-3" data-i18n="nav_contact">Contact</p>
+                <p class="text-sm text-carthy-ink/60 dark:text-carthy-darkMuted flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-carthy-mint" aria-hidden="true"></i>
+                    <span data-i18n="contact_location">Colón, Panamá</span>
+                </p>
+                <a href="/app/" class="inline-block mt-4 text-xs font-bold bg-carthy-mint text-carthy-ink px-4 py-2.5 rounded-xl" data-i18n="btn_get_started">Get Started</a>
+            </div>
+        </div>
+        <div class="border-t border-black/5 dark:border-carthy-darkBorder px-4 py-5 text-center text-[11px] text-carthy-ink/45 dark:text-carthy-darkMuted space-x-2">
+            <span data-i18n="footer_copy">© 2026 Carthy Academic Project</span>
+            <span aria-hidden="true">·</span>
+            <span data-i18n="footer_version">Version 1.0</span>
+        </div>
+    </footer>
+
+    <script>
+    const TRAD = {
+        en: {
+            nav_home: "Home", nav_about: "About Carthy", nav_features: "Features", nav_resources: "Resources",
+            nav_wellness: "Wellness Hub", nav_faq: "FAQ", nav_contact: "Contact",
+            btn_login: "Login", btn_register: "Register", btn_get_started: "Get Started",
+            btn_learn_more: "Learn More", btn_create_account: "Create Account",
+            btn_go_dashboard: "Go to Dashboard",
+            hero_title: "Supporting Student Well-being, One Conversation at a Time.",
+            hero_sub: "Secure active listening, wellness tools, and human connection—built for educational communities.",
+            hero_visual_caption: "A calm space to be heard.",
+            hero_visual_sub: "Confidential sessions · Wellness tools · Real support",
+            value_section_title: "What Carthy offers",
+            value_listen_title: "Active Listening",
+            value_listen_desc: "Safe and respectful conversations where students can express themselves freely and feel heard.",
+            value_wellbeing_title: "Student Well-being",
+            value_wellbeing_desc: "Designed to support emotional health and promote a healthier academic experience.",
+            value_privacy_title: "Privacy & Confidentiality",
+            value_privacy_desc: "Every conversation is treated with confidentiality, empathy, and respect.",
+            value_resources_title: "Educational Resources",
+            value_resources_desc: "Access trusted articles and practical guides that encourage emotional well-being and healthy habits.",
+            about_eyebrow: "What is Carthy?", about_title: "A complete student wellness platform",
+            about_p1: "Carthy connects students with trained listeners through active listening sessions in a safe, confidential, and accessible environment.",
+            about_p2: "Created for educational communities, it helps students who need someone to talk to—without stigma, long waits, or complicated processes.",
+            about_p3: "Beyond scheduling, Carthy includes mood tracking, secure chat, wellness resources, and tools that support emotional well-being every day.",
+            about_quote: "Listen first. Support always.",
+            mission_title: "Our Mission", mission_text: "Empower students through accessible emotional support, active listening, and digital wellness solutions.",
+            vision_title: "Our Vision", vision_text: "Become the leading student wellness platform in educational communities across Panama and, eventually, Latin America.",
+            problem_eyebrow: "The Challenge", problem_title: "What many students face",
+            solution_eyebrow: "Our Solution", solution_title: "How Carthy helps",
+            why_title: "Why choose Carthy?", features_eyebrow: "Platform", features_title: "Everything in one calm place",
+            wellness_eyebrow: "Wellness Hub", wellness_title: "More than appointments",
+            wellness_sub: "Daily tools that help students check in, breathe, reflect, and grow—alongside their listening sessions.",
+            wellness_cta: "Explore Resources",
+            resources_eyebrow: "Resources", resources_title: "Digital wellness library",
+            resources_intro: "Explore trusted articles, videos, and wellness guides designed to help students improve their emotional well-being, academic success, and daily habits.",
+            resources_search_ph: "Search resources...",
+            view_all_resources: "View all resources",
+            how_title: "How Carthy works", impact_title: "Our impact", faq_title: "Frequently asked questions",
+            contact_title: "Contact us",
+            contact_academic: "Carthy is currently an academic project developed by students. The contact form is available for demonstrations and feedback.",
+            contact_intro: "Send us a message. We read every note carefully and will get back to you when we can.",
+            contact_location_label: "Location",
+            contact_location: "Colón, Panamá",
+            contact_name: "Full Name", contact_email: "Email", contact_subject: "Subject", contact_message: "Message",
+            contact_send: "Send message", contact_sending: "Sending…",
+            contact_thanks: "Thanks — we received your message and will review it soon.",
+            contact_err_name: "Please enter your full name.",
+            contact_err_email: "Please enter a valid email address.",
+            contact_err_subject: "Please add a short subject.",
+            contact_err_message: "Please write a message of at least 20 characters.",
+            contact_err_generic: "Something went wrong. Please try again in a moment.",
+            contact_err_csrf: "Your session expired. Please refresh the page and try again.",
+            contact_err_rate: "Too many messages. Please wait a few minutes and try again.",
+            cta_title: "Ready to take care of your well-being?",
+            cta_sub: "Join Carthy today and become part of a healthier, more connected educational community.",
+            footer_tagline: "Student wellness through listening and care.", footer_links: "Quick links",
+            footer_resources: "Resources", footer_privacy: "Privacy Policy", footer_terms: "Terms of Use",
+            footer_a11y: "Accessibility Statement",
+            footer_copy: "© 2026 Carthy Academic Project", footer_version: "Version 1.0", footer_made: "Made by Team Carthy",
+            learn_more: "Learn more", read_more: "Read more", min_read: "min read",
+        },
+        es: {
+            nav_home: "Inicio", nav_about: "Acerca de Carthy", nav_features: "Funciones", nav_resources: "Recursos",
+            nav_wellness: "Bienestar", nav_faq: "Preguntas", nav_contact: "Contacto",
+            btn_login: "Iniciar sesión", btn_register: "Registrarse", btn_get_started: "Comenzar",
+            btn_learn_more: "Saber más", btn_create_account: "Crear cuenta",
+            btn_go_dashboard: "Ir al Dashboard",
+            hero_title: "Apoyando el bienestar estudiantil, una conversación a la vez.",
+            hero_sub: "Escucha activa segura, herramientas de bienestar y conexión humana—para comunidades educativas.",
+            hero_visual_caption: "Un espacio calmado para ser escuchado.",
+            hero_visual_sub: "Sesiones confidenciales · Herramientas · Apoyo real",
+            value_section_title: "Lo que ofrece Carthy",
+            value_listen_title: "Escucha Activa",
+            value_listen_desc: "Conversaciones seguras y respetuosas donde los estudiantes pueden expresarse libremente y sentirse escuchados.",
+            value_wellbeing_title: "Bienestar Estudiantil",
+            value_wellbeing_desc: "Diseñada para apoyar la salud emocional y promover una experiencia académica más saludable.",
+            value_privacy_title: "Privacidad y Confidencialidad",
+            value_privacy_desc: "Cada conversación se trata con confidencialidad, empatía y respeto.",
+            value_resources_title: "Recursos Educativos",
+            value_resources_desc: "Accede a artículos confiables y guías prácticas que fomentan el bienestar emocional y hábitos saludables.",
+            about_eyebrow: "¿Qué es Carthy?", about_title: "Una plataforma completa de bienestar estudiantil",
+            about_p1: "Carthy conecta estudiantes con escuchadores capacitados mediante sesiones de escucha activa en un entorno seguro, confidencial y accesible.",
+            about_p2: "Creada para comunidades educativas, ayuda a quienes necesitan hablar—sin estigma, largas esperas ni procesos complicados.",
+            about_p3: "Más allá de agendar, incluye seguimiento del ánimo, chat seguro, recursos de bienestar y herramientas para el día a día.",
+            about_quote: "Escuchar primero. Apoyar siempre.",
+            mission_title: "Nuestra misión", mission_text: "Empoderar a los estudiantes con apoyo emocional accesible, escucha activa y soluciones digitales de bienestar.",
+            vision_title: "Nuestra visión", vision_text: "Ser la plataforma líder de bienestar estudiantil en comunidades educativas de Panamá y, eventualmente, Latinoamérica.",
+            problem_eyebrow: "El desafío", problem_title: "Lo que enfrentan muchos estudiantes",
+            solution_eyebrow: "Nuestra solución", solution_title: "Cómo ayuda Carthy",
+            why_title: "¿Por qué Carthy?", features_eyebrow: "Plataforma", features_title: "Todo en un solo lugar calmado",
+            wellness_eyebrow: "Centro de bienestar", wellness_title: "Más que citas",
+            wellness_sub: "Herramientas diarias para registrar el ánimo, respirar, reflexionar y crecer—junto a las sesiones de escucha.",
+            wellness_cta: "Explorar Recursos",
+            resources_eyebrow: "Recursos", resources_title: "Biblioteca digital de bienestar",
+            resources_intro: "Explora artículos, videos y guías de bienestar diseñados para ayudar a los estudiantes a mejorar su bienestar emocional, éxito académico y hábitos diarios.",
+            resources_search_ph: "Buscar recursos...",
+            view_all_resources: "Ver todos los recursos",
+            how_title: "Cómo funciona Carthy", impact_title: "Nuestro impacto", faq_title: "Preguntas frecuentes",
+            contact_title: "Contáctanos",
+            contact_academic: "Carthy es actualmente un proyecto académico desarrollado por estudiantes. El formulario de contacto está disponible para demostraciones y comentarios.",
+            contact_intro: "Envíanos un mensaje. Leemos cada nota con cuidado y te responderemos cuando podamos.",
+            contact_location_label: "Ubicación",
+            contact_location: "Colón, Panamá",
+            contact_name: "Nombre completo", contact_email: "Correo", contact_subject: "Asunto", contact_message: "Mensaje",
+            contact_send: "Enviar mensaje", contact_sending: "Enviando…",
+            contact_thanks: "Gracias — recibimos tu mensaje y lo revisaremos pronto.",
+            contact_err_name: "Por favor escribe tu nombre completo.",
+            contact_err_email: "Por favor ingresa un correo válido.",
+            contact_err_subject: "Por favor agrega un asunto breve.",
+            contact_err_message: "Por favor escribe un mensaje de al menos 20 caracteres.",
+            contact_err_generic: "Algo salió mal. Inténtalo de nuevo en un momento.",
+            contact_err_csrf: "Tu sesión expiró. Recarga la página e inténtalo de nuevo.",
+            contact_err_rate: "Demasiados mensajes. Espera unos minutos e inténtalo de nuevo.",
+            cta_title: "¿Listo para cuidar tu bienestar?",
+            cta_sub: "Únete a Carthy y forma parte de una comunidad educativa más saludable y conectada.",
+            footer_tagline: "Bienestar estudiantil a través de la escucha y el cuidado.", footer_links: "Enlaces",
+            footer_resources: "Recursos", footer_privacy: "Política de privacidad", footer_terms: "Términos de uso",
+            footer_a11y: "Declaración de accesibilidad",
+            footer_copy: "© 2026 Carthy Proyecto Académico", footer_version: "Versión 1.0", footer_made: "Hecho por Team Carthy",
+            learn_more: "Saber más", read_more: "Leer más", min_read: "min de lectura",
+        }
+    };
+
+    const CONTENT = {
+        en: {
+            problems: [
+                { icon: "fa-book-open", title: "Academic Stress", desc: "Deadlines, exams, and pressure that never seem to pause." },
+                { icon: "fa-heart-pulse", title: "Anxiety", desc: "Racing thoughts that make school and life feel heavier." },
+                { icon: "fa-user", title: "Loneliness", desc: "Feeling unseen even when surrounded by people." },
+                { icon: "fa-comment-slash", title: "Fear of Asking for Help", desc: "Worrying about stigma or being misunderstood." },
+                { icon: "fa-hand-holding-heart", title: "Lack of Emotional Support", desc: "Few safe spaces to talk about what really matters." },
+                { icon: "fa-battery-quarter", title: "Mental Exhaustion", desc: "Burnout that drains focus, motivation, and joy." },
+            ],
+            solutions: [
+                { icon: "fa-calendar-plus", title: "Book Sessions", desc: "Schedule active listening sessions that fit your week." },
+                { icon: "fa-face-smile", title: "Mood Tracker", desc: "Check in daily and notice patterns over time." },
+                { icon: "fa-comments", title: "Secure Chat", desc: "Private messaging with your support network." },
+                { icon: "fa-book", title: "Wellness Resources", desc: "Guides and articles for stress, sleep, and growth." },
+                { icon: "fa-bell", title: "Notifications", desc: "Gentle reminders for sessions and check-ins." },
+                { icon: "fa-clock", title: "Availability Management", desc: "Listeners share clear windows to connect." },
+                { icon: "fa-table-columns", title: "Student Dashboard", desc: "A calm overview of your wellness journey." },
+                { icon: "fa-id-badge", title: "Profile Management", desc: "Keep your information and preferences updated." },
+            ],
+            why: ["Confidential", "Easy to Use", "Responsive", "Modern Design", "Safe", "Student-focused", "Available Anywhere", "Bilingual"],
+            features: ["Dashboard", "Book Session", "My Sessions", "Chat", "Mood Tracker", "Resources", "Notifications", "Profile", "Settings", "Admin Panel", "Dark Mode", "English / Spanish", "Mobile Friendly"],
+            wellness: [
+                { title: "Daily Mood Check", desc: "A quick pulse on how you feel today." },
+                { title: "Breathing Exercises", desc: "Short practices to settle your nervous system." },
+                { title: "Wellness Tips", desc: "Practical ideas you can try in minutes." },
+                { title: "Daily Reflection", desc: "Space to write what weighed on you—and what helped." },
+                { title: "Healthy Habits", desc: "Small routines that compound into resilience." },
+                { title: "Meditation", desc: "Guided stillness for busy student minds." },
+                { title: "Stress Management", desc: "Tools for exams, deadlines, and overload." },
+                { title: "Academic Success Tips", desc: "Study well without burning out." },
+                { title: "Quote of the Day", desc: "A gentle line to carry with you." },
+                { title: "Weekly Challenge", desc: "One simple habit to practice together." },
+                { title: "Mood Analytics", desc: "See trends in how your week felt." },
+                { title: "Recommended Resources", desc: "Content matched to your needs." },
+                { title: "Upcoming Session", desc: "Know who you’ll meet and when." },
+                { title: "Saved Articles", desc: "Keep the pieces that resonate." },
+            ],
+            resources: [
+                { cat: "Mental Health", title: "Understanding anxiety as a student", time: 6, desc: "Recognize signs early and respond with care." },
+                { cat: "Stress Management", title: "Exam week without burnout", time: 5, desc: "Plan energy, not just hours of study." },
+                { cat: "Academic Success", title: "Focus rituals that stick", time: 4, desc: "Build attention in short, kind intervals." },
+                { cat: "Healthy Habits", title: "Micro-habits for busy semesters", time: 5, desc: "Tiny actions that protect your well-being." },
+                { cat: "Sleep", title: "Sleep when your mind won’t stop", time: 7, desc: "Wind-down ideas for restless nights." },
+                { cat: "Mindfulness", title: "Two-minute resets between classes", time: 3, desc: "Grounding practices you can do on campus." },
+                { cat: "Relationships", title: "Asking for help without shame", time: 5, desc: "Language that makes support easier." },
+                { cat: "Motivation", title: "Restarting after a hard week", time: 4, desc: "Gentle ways back into your rhythm." },
+                { cat: "Guides", title: "How active listening sessions work", time: 8, desc: "What to expect before your first conversation." },
+            ],
+            how: [
+                "Create Account", "Complete Your Profile", "Book a Session",
+                "Meet Your Listener", "Receive Personalized Support", "Track Your Emotional Well-being"
+            ],
+            impact: [
+                { icon: "fa-seedling", title: "Promoting emotional well-being", desc: "Students feel safer naming what they feel." },
+                { icon: "fa-people-group", title: "Building healthier communities", desc: "Campuses grow cultures of care." },
+                { icon: "fa-ear-listen", title: "Encouraging active listening", desc: "Presence becomes a practiced skill." },
+                { icon: "fa-graduation-cap", title: "Supporting academic success", desc: "Emotional steadiness improves focus." },
+                { icon: "fa-shield-heart", title: "Creating safe digital spaces", desc: "Confidentiality is designed in—not bolted on." },
+            ],
+            faq: [
+                { q: "What is Carthy?", a: "Carthy is a student wellness platform that combines active listening sessions with mood tools, secure chat, and educational resources." },
+                { q: "Is Carthy free?", a: "Carthy is designed for educational communities. Availability and pricing depend on your institution’s program." },
+                { q: "Who can use Carthy?", a: "Students and trained listeners (professionals) within participating educational communities." },
+                { q: "How do I schedule a session?", a: "Create an account, open Book Session, choose a date, modality, and available listener, then confirm." },
+                { q: "Are my conversations confidential?", a: "Yes. Sessions and private notes are designed for confidentiality, with secure handling of sensitive content." },
+                { q: "Can I cancel appointments?", a: "Yes. You can manage upcoming sessions from My Sessions and update status according to platform guidelines." },
+                { q: "Who are the listeners?", a: "Trained listeners and professionals who offer active listening support within the Carthy community." },
+            ],
+        },
+        es: {
+            problems: [
+                { icon: "fa-book-open", title: "Estrés académico", desc: "Entregas, exámenes y presión que no parecen detenerse." },
+                { icon: "fa-heart-pulse", title: "Ansiedad", desc: "Pensamientos acelerados que hacen todo más pesado." },
+                { icon: "fa-user", title: "Soledad", desc: "Sentirse invisible incluso rodeado de personas." },
+                { icon: "fa-comment-slash", title: "Miedo a pedir ayuda", desc: "Temor al estigma o a no ser comprendido." },
+                { icon: "fa-hand-holding-heart", title: "Falta de apoyo emocional", desc: "Pocos espacios seguros para hablar de lo importante." },
+                { icon: "fa-battery-quarter", title: "Agotamiento mental", desc: "Burnout que drena foco, motivación y alegría." },
+            ],
+            solutions: [
+                { icon: "fa-calendar-plus", title: "Agendar sesiones", desc: "Programa escucha activa que se adapte a tu semana." },
+                { icon: "fa-face-smile", title: "Registro de ánimo", desc: "Haz check-in diario y observa patrones." },
+                { icon: "fa-comments", title: "Chat seguro", desc: "Mensajería privada con tu red de apoyo." },
+                { icon: "fa-book", title: "Recursos de bienestar", desc: "Guías sobre estrés, sueño y crecimiento." },
+                { icon: "fa-bell", title: "Notificaciones", desc: "Recordatorios suaves de sesiones y check-ins." },
+                { icon: "fa-clock", title: "Disponibilidad", desc: "Los escuchadores comparten horarios claros." },
+                { icon: "fa-table-columns", title: "Panel del estudiante", desc: "Una vista calmada de tu bienestar." },
+                { icon: "fa-id-badge", title: "Perfil", desc: "Mantén tu información y preferencias al día." },
+            ],
+            why: ["Confidencial", "Fácil de usar", "Responsive", "Diseño moderno", "Seguro", "Centrado en el estudiante", "Disponible en cualquier lugar", "Bilingüe"],
+            features: ["Inicio", "Agendar sesión", "Mis sesiones", "Chat", "Ánimo", "Recursos", "Notificaciones", "Perfil", "Ajustes", "Admin", "Modo oscuro", "Inglés / Español", "Móvil"],
+            wellness: [
+                { title: "Ánimo del día", desc: "Un pulso rápido de cómo te sientes." },
+                { title: "Ejercicios de respiración", desc: "Prácticas cortas para calmar el sistema nervioso." },
+                { title: "Consejos de bienestar", desc: "Ideas prácticas en minutos." },
+                { title: "Reflexión diaria", desc: "Escribe lo que pesó—y lo que ayudó." },
+                { title: "Hábitos saludables", desc: "Pequeñas rutinas que construyen resiliencia." },
+                { title: "Meditación", desc: "Quietud guiada para mentes ocupadas." },
+                { title: "Manejo del estrés", desc: "Herramientas para exámenes y sobrecarga." },
+                { title: "Éxito académico", desc: "Estudiar bien sin quemarte." },
+                { title: "Frase del día", desc: "Una línea suave para llevar contigo." },
+                { title: "Reto semanal", desc: "Un hábito simple para practicar." },
+                { title: "Análisis de ánimo", desc: "Ve tendencias de tu semana." },
+                { title: "Recursos recomendados", desc: "Contenido según tus necesidades." },
+                { title: "Próxima sesión", desc: "Quién te acompaña y cuándo." },
+                { title: "Artículos guardados", desc: "Conserva lo que resuena." },
+            ],
+            resources: [
+                { cat: "Salud mental", title: "Entender la ansiedad como estudiante", time: 6, desc: "Reconocer señales a tiempo y responder con cuidado." },
+                { cat: "Estrés", title: "Semana de exámenes sin burnout", time: 5, desc: "Planifica energía, no solo horas de estudio." },
+                { cat: "Académico", title: "Rituales de foco que funcionan", time: 4, desc: "Construye atención en intervalos amables." },
+                { cat: "Hábitos", title: "Microhábitos para semestres ocupados", time: 5, desc: "Acciones pequeñas que protegen tu bienestar." },
+                { cat: "Sueño", title: "Dormir cuando la mente no para", time: 7, desc: "Ideas para noches inquietas." },
+                { cat: "Mindfulness", title: "Resets de dos minutos entre clases", time: 3, desc: "Prácticas de anclaje en el campus." },
+                { cat: "Relaciones", title: "Pedir ayuda sin vergüenza", time: 5, desc: "Palabras que facilitan el apoyo." },
+                { cat: "Motivación", title: "Reiniciar después de una semana dura", time: 4, desc: "Formas suaves de volver a tu ritmo." },
+                { cat: "Guías", title: "Cómo funcionan las sesiones de escucha", time: 8, desc: "Qué esperar antes de tu primera conversación." },
+            ],
+            how: [
+                "Crea tu cuenta", "Completa tu perfil", "Agenda una sesión",
+                "Conoce a tu escuchador", "Recibe apoyo personalizado", "Sigue tu bienestar emocional"
+            ],
+            impact: [
+                { icon: "fa-seedling", title: "Promover el bienestar emocional", desc: "Los estudiantes se sienten más seguros al nombrar lo que sienten." },
+                { icon: "fa-people-group", title: "Comunidades más saludables", desc: "Los campus cultivan culturas de cuidado." },
+                { icon: "fa-ear-listen", title: "Fomentar la escucha activa", desc: "La presencia se vuelve una habilidad." },
+                { icon: "fa-graduation-cap", title: "Apoyar el éxito académico", desc: "La estabilidad emocional mejora el foco." },
+                { icon: "fa-shield-heart", title: "Espacios digitales seguros", desc: "La confidencialidad está diseñada desde el inicio." },
+            ],
+            faq: [
+                { q: "¿Qué es Carthy?", a: "Carthy es una plataforma de bienestar estudiantil que combina sesiones de escucha activa con herramientas de ánimo, chat seguro y recursos educativos." },
+                { q: "¿Carthy es gratis?", a: "Carthy está pensada para comunidades educativas. La disponibilidad depende del programa de tu institución." },
+                { q: "¿Quién puede usarla?", a: "Estudiantes y escuchadores capacitados dentro de las comunidades educativas participantes." },
+                { q: "¿Cómo agendo una sesión?", a: "Crea una cuenta, abre Agendar sesión, elige fecha, modalidad y escuchador disponible, y confirma." },
+                { q: "¿Mis conversaciones son confidenciales?", a: "Sí. Las sesiones y notas privadas están diseñadas para la confidencialidad." },
+                { q: "¿Puedo cancelar citas?", a: "Sí. Desde Mis sesiones puedes gestionar próximas citas según las guías de la plataforma." },
+                { q: "¿Quiénes son los escuchadores?", a: "Profesionales y escuchadores capacitados que ofrecen apoyo de escucha activa en Carthy." },
+            ],
+        }
+    };
+
+    let lang = localStorage.getItem('carthy-lang') || (navigator.language?.startsWith('es') ? 'es' : 'en');
+    let resourceFilter = 'all';
+    let resourceSearchTimer = null;
+
+    function t(key) {
+        return (TRAD[lang] && TRAD[lang][key]) || TRAD.en[key] || key;
+    }
+
+    async function loadLandingResources() {
+        const cardsEl = document.getElementById('resource-cards');
+        const filtersEl = document.getElementById('resource-filters');
+        if (!cardsEl || !filtersEl) return;
+
+        const q = (document.getElementById('resource-search')?.value || '').trim();
+        const params = new URLSearchParams({ lang });
+        if (q) params.set('q', q);
+        if (resourceFilter && resourceFilter !== 'all') params.set('category', resourceFilter);
+
+        try {
+            const res = await fetch('/api/resources/?' + params.toString());
+            const data = await res.json();
+            if (!res.ok || data.status !== 'success') {
+                cardsEl.innerHTML = `<p class="text-sm text-carthy-ink/50 col-span-full">${lang==='es'?'No se pudieron cargar los recursos.':'Could not load resources.'}</p>`;
+                return;
+            }
+
+            const allLabel = lang === 'es' ? 'Todos' : 'All';
+            const esc = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            filtersEl.innerHTML = [`<button type="button" data-cat="all" class="resource-filter text-[11px] font-bold px-3.5 py-2 rounded-xl border transition ${resourceFilter==='all' ? 'bg-carthy-ink text-white dark:bg-carthy-mint dark:text-carthy-ink border-transparent' : 'bg-white dark:bg-carthy-darkSurface border-black/5 dark:border-carthy-darkBorder'}">${allLabel}</button>`]
+                .concat((data.categories || []).map(c => `<button type="button" data-cat="${esc(c.id)}" class="resource-filter text-[11px] font-bold px-3.5 py-2 rounded-xl border transition ${resourceFilter===c.id ? 'bg-carthy-ink text-white dark:bg-carthy-mint dark:text-carthy-ink border-transparent' : 'bg-white dark:bg-carthy-darkSurface border-black/5 dark:border-carthy-darkBorder'}">${esc(c.label)}</button>`))
+                .join('');
+
+            filtersEl.querySelectorAll('.resource-filter').forEach(btn => {
+                btn.addEventListener('click', () => { resourceFilter = btn.dataset.cat; loadLandingResources(); });
+            });
+
+            const list = (data.resources || []).slice(0, 6);
+            cardsEl.innerHTML = list.length ? list.map((r, i) => `
+                <article class="reveal rounded-2xl overflow-hidden bg-white dark:bg-carthy-darkSurface border border-black/[0.04] dark:border-carthy-darkBorder hover:-translate-y-0.5 transition shadow-sm" style="transition-delay:${i*0.04}s">
+                    <div class="h-36 overflow-hidden bg-carthy-mintLight">
+                        <img src="${esc(r.cover_image)}" alt="${esc(r.title || 'Carthy resource')}" loading="lazy" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-carthy-ink/40 dark:text-carthy-darkMuted">${esc(r.category_label)}</span>
+                            <span class="text-[10px] text-carthy-ink/40 dark:text-carthy-darkMuted">${esc(r.reading_time)} ${t('min_read')}</span>
+                        </div>
+                        <h3 class="font-bold text-sm mb-2 line-clamp-2">${esc(r.title)}</h3>
+                        <p class="text-xs text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed mb-3 line-clamp-2">${esc(r.short_description)}</p>
+                        <a href="${esc(r.detail_url)}" class="text-[11px] font-bold text-emerald-800 dark:text-carthy-mint hover:underline">${t('read_more')}</a>
+                    </div>
+                </article>`).join('') : `<p class="text-sm text-carthy-ink/50 col-span-full">${lang==='es'?'Sin resultados.':'No results.'}</p>`;
+
+            if (typeof observeReveals === 'function') observeReveals();
+        } catch (e) {
+            console.error(e);
+            cardsEl.innerHTML = `<p class="text-sm text-carthy-ink/50 col-span-full">${lang==='es'?'Error de conexión.':'Connection error.'}</p>`;
+        }
+    }
+
+    function applyI18n() {
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            if (TRAD[lang][k]) el.textContent = TRAD[lang][k];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const k = el.getAttribute('data-i18n-placeholder');
+            if (TRAD[lang][k]) el.placeholder = TRAD[lang][k];
+        });
+        document.getElementById('btn-lang').textContent = lang.toUpperCase();
+        renderDynamic();
+    }
+
+    function renderDynamic() {
+        const c = CONTENT[lang];
+
+        document.getElementById('problem-grid').innerHTML = c.problems.map((p, i) => `
+            <article class="reveal rounded-2xl bg-white dark:bg-carthy-darkSurface p-6 border border-black/[0.04] dark:border-carthy-darkBorder hover:-translate-y-0.5 transition" style="transition-delay:${i*0.04}s">
+                <div class="w-10 h-10 rounded-xl bg-carthy-mintLight dark:bg-carthy-darkSurface2 flex items-center justify-center text-carthy-ink dark:text-carthy-mint mb-4"><i class="fa-solid ${p.icon}"></i></div>
+                <h3 class="font-bold text-sm mb-2">${p.title}</h3>
+                <p class="text-xs text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed">${p.desc}</p>
+            </article>`).join('');
+
+        document.getElementById('solution-grid').innerHTML = c.solutions.map((s, i) => `
+            <article class="reveal group rounded-2xl bg-white dark:bg-carthy-darkSurface p-5 border border-black/[0.04] dark:border-carthy-darkBorder hover:border-carthy-mint/60 transition" style="transition-delay:${i*0.03}s">
+                <div class="w-9 h-9 rounded-lg bg-carthy-sage/40 dark:bg-carthy-darkSurface2 flex items-center justify-center mb-3 text-sm"><i class="fa-solid ${s.icon}"></i></div>
+                <h3 class="font-bold text-sm mb-1.5">${s.title}</h3>
+                <p class="text-[11px] text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed mb-3">${s.desc}</p>
+                <a href="/resources/" class="text-[11px] font-bold text-emerald-800 dark:text-carthy-mint group-hover:underline">${t('learn_more')}</a>
+            </article>`).join('');
+
+        document.getElementById('why-grid').innerHTML = c.why.map((w, i) => `
+            <div class="reveal rounded-2xl bg-white/80 dark:bg-carthy-darkSurface px-4 py-5 text-center border border-black/[0.03] dark:border-carthy-darkBorder" style="transition-delay:${i*0.03}s">
+                <p class="font-bold text-sm">${w}</p>
+            </div>`).join('');
+
+        document.getElementById('features-grid').innerHTML = c.features.map((f, i) => `
+            <div class="reveal flex items-center gap-3 rounded-xl bg-white dark:bg-carthy-darkSurface px-4 py-3 border border-black/[0.04] dark:border-carthy-darkBorder" style="transition-delay:${i*0.02}s">
+                <span class="w-2 h-2 rounded-full bg-carthy-mint shrink-0"></span>
+                <span class="text-sm font-semibold">${f}</span>
+            </div>`).join('');
+
+        document.getElementById('wellness-grid').innerHTML = c.wellness.map((w, i) => `
+            <div class="rounded-xl bg-carthy-bg dark:bg-carthy-darkSurface2 p-4 border border-transparent hover:border-carthy-mint/40 transition">
+                <h3 class="font-bold text-xs mb-1">${w.title}</h3>
+                <p class="text-[11px] text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed">${w.desc}</p>
+            </div>`).join('');
+
+        loadLandingResources();
+
+        document.getElementById('how-timeline').innerHTML = c.how.map((step, i) => `
+            <li class="reveal flex gap-4 pb-8 last:pb-0 relative" style="transition-delay:${i*0.05}s">
+                ${i < c.how.length - 1 ? '<span class="absolute left-[15px] top-8 bottom-0 w-px bg-carthy-mint dark:bg-carthy-darkBorder"></span>' : ''}
+                <span class="relative z-10 w-8 h-8 rounded-full bg-carthy-mint dark:bg-carthy-mint/30 text-carthy-ink dark:text-carthy-darkText text-xs font-bold flex items-center justify-center shrink-0">${i+1}</span>
+                <div class="pt-1"><p class="font-bold text-sm">${step}</p></div>
+            </li>`).join('');
+
+        document.getElementById('impact-grid').innerHTML = c.impact.map((it, i) => `
+            <article class="reveal rounded-2xl bg-white dark:bg-carthy-darkSurface p-6 border border-black/[0.04] dark:border-carthy-darkBorder" style="transition-delay:${i*0.04}s">
+                <i class="fa-solid ${it.icon} text-carthy-ink/40 dark:text-carthy-mint mb-3"></i>
+                <h3 class="font-bold text-sm mb-2">${it.title}</h3>
+                <p class="text-xs text-carthy-ink/55 dark:text-carthy-darkMuted leading-relaxed">${it.desc}</p>
+            </article>`).join('');
+
+        document.getElementById('faq-list').innerHTML = c.faq.map((f, i) => `
+            <div class="faq-item reveal rounded-2xl bg-white dark:bg-carthy-darkSurface border border-black/[0.04] dark:border-carthy-darkBorder overflow-hidden" style="transition-delay:${i*0.03}s">
+                <button type="button" class="faq-btn w-full flex items-center justify-between gap-4 text-left px-5 py-4 font-bold text-sm">
+                    <span>${f.q}</span>
+                    <i class="fa-solid fa-chevron-down text-xs faq-chevron transition-transform text-carthy-ink/40"></i>
+                </button>
+                <div class="faq-panel px-5"><p class="text-xs text-carthy-ink/60 dark:text-carthy-darkMuted leading-relaxed pb-4">${f.a}</p></div>
+            </div>`).join('');
+
+        document.querySelectorAll('.faq-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.faq-item');
+                const wasOpen = item.classList.contains('open');
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+                if (!wasOpen) item.classList.add('open');
+            });
+        });
+
+        observeReveals();
+    }
+
+    let revealObserver = null;
+    function observeReveals() {
+        if (revealObserver) {
+            revealObserver.disconnect();
+            revealObserver = null;
+        }
+        revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    revealObserver.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
+    }
+
+    function getCsrfToken() {
+        const input = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (input && input.value) return input.value;
+        const m = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+        return m ? decodeURIComponent(m[1]) : '';
+    }
+
+    function contactErrorMessage(code) {
+        const map = {
+            err_name: 'contact_err_name',
+            err_email: 'contact_err_email',
+            err_subject: 'contact_err_subject',
+            err_message: 'contact_err_message',
+            rate_limit: 'contact_err_rate',
+            csrf: 'contact_err_csrf',
+            invalid: 'contact_err_generic',
+        };
+        return t(map[code] || 'contact_err_generic');
+    }
+
+    function clearContactErrors() {
+        ['name', 'email', 'subject', 'message'].forEach(field => {
+            const input = document.getElementById('contact-' + field);
+            const err = document.getElementById('contact-' + field + '-error');
+            if (input) input.classList.remove('input-invalid');
+            if (err) { err.textContent = ''; err.classList.add('hidden'); }
+        });
+        document.getElementById('contact-form-error')?.classList.add('hidden');
+        document.getElementById('contact-success')?.classList.add('hidden');
+    }
+
+    function setFieldError(field, message) {
+        const input = document.getElementById('contact-' + field);
+        const err = document.getElementById('contact-' + field + '-error');
+        if (input) input.classList.add('input-invalid');
+        if (err) { err.textContent = message; err.classList.remove('hidden'); }
+    }
+
+    function validateContactForm() {
+        clearContactErrors();
+        const name = (document.getElementById('contact-name').value || '').trim();
+        const email = (document.getElementById('contact-email').value || '').trim();
+        const subject = (document.getElementById('contact-subject').value || '').trim();
+        const message = (document.getElementById('contact-message').value || '').trim();
+        const website = (document.getElementById('contact-website')?.value || '').trim();
+        let ok = true;
+        if (name.length < 2) { setFieldError('name', t('contact_err_name')); ok = false; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('email', t('contact_err_email')); ok = false; }
+        if (subject.length < 3) { setFieldError('subject', t('contact_err_subject')); ok = false; }
+        if (message.length < 20) { setFieldError('message', t('contact_err_message')); ok = false; }
+        return ok ? { name, email, subject, message, website } : null;
+    }
+
+    // Theme
+    document.getElementById('btn-theme').addEventListener('click', () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('carthy-theme', dark ? 'dark' : 'light');
+        document.getElementById('icon-theme').className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    });
+    document.getElementById('icon-theme').className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+    // Language
+    document.getElementById('btn-lang').addEventListener('click', () => {
+        lang = lang === 'en' ? 'es' : 'en';
+        localStorage.setItem('carthy-lang', lang);
+        applyI18n();
+    });
+
+    // Mobile menu
+    const menu = document.getElementById('mobile-menu');
+    const btnMenu = document.getElementById('btn-menu');
+    const siteNav = document.getElementById('site-nav');
+
+    btnMenu.addEventListener('click', () => {
+        const open = menu.classList.toggle('hidden') === false;
+        btnMenu.setAttribute('aria-expanded', open);
+        btnMenu.innerHTML = open ? '<i class="fa-solid fa-xmark text-lg"></i>' : '<i class="fa-solid fa-bars text-lg"></i>';
+        if (open) siteNav.classList.add('is-scrolled');
+        else if (window.scrollY < 24) siteNav.classList.remove('is-scrolled');
+    });
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        menu.classList.add('hidden');
+        btnMenu.setAttribute('aria-expanded', 'false');
+        btnMenu.innerHTML = '<i class="fa-solid fa-bars text-lg"></i>';
+    }));
+
+    // Sticky navbar scroll effect
+    function updateNavScroll() {
+        const menuOpen = !menu.classList.contains('hidden');
+        if (window.scrollY > 24 || menuOpen) siteNav.classList.add('is-scrolled');
+        else siteNav.classList.remove('is-scrolled');
+    }
+    window.addEventListener('scroll', updateNavScroll, { passive: true });
+    updateNavScroll();
+
+    // Active section highlight (scroll spy)
+    const sectionIds = ['hero', 'about', 'features', 'wellness', 'resources', 'faq', 'contact'];
+    const navLinks = document.querySelectorAll('nav[aria-label="Primary"] .nav-link');
+
+    function setActiveNav(id) {
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('data-nav') === id);
+        });
+    }
+
+    const spyObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) setActiveNav(entry.target.id);
+        });
+    }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
+
+    sectionIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) spyObserver.observe(el);
+    });
+
+    // Authenticated user: hide Login/Register, show Go to Dashboard
+    async function checkLandingAuth() {
+        try {
+            const res = await fetch('/api/sesion-actual/', { credentials: 'same-origin' });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data.status === 'success' && data.user) {
+                document.getElementById('nav-guest')?.classList.add('hidden');
+                document.getElementById('nav-auth')?.classList.remove('hidden');
+                document.getElementById('mobile-guest')?.classList.add('hidden');
+                document.getElementById('mobile-auth')?.classList.remove('hidden');
+            }
+        } catch (e) {
+            /* guest mode */
+        }
+    }
+    checkLandingAuth();
+
+    // Contact form → Django (ContactMessage)
+    document.getElementById('contact-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = validateContactForm();
+        if (!payload) return;
+
+        const btn = document.getElementById('contact-submit');
+        const formError = document.getElementById('contact-form-error');
+        const success = document.getElementById('contact-success');
+        const csrf = getCsrfToken();
+        btn.disabled = true;
+        btn.textContent = t('contact_sending');
+        success.classList.add('hidden');
+        formError.classList.add('hidden');
+
+        if (!csrf) {
+            formError.textContent = t('contact_err_csrf');
+            formError.classList.remove('hidden');
+            btn.disabled = false;
+            btn.textContent = t('contact_send');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/contact/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf,
+                },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.status === 403) {
+                formError.textContent = t('contact_err_csrf');
+                formError.classList.remove('hidden');
+                return;
+            }
+            if (!res.ok || data.status !== 'success') {
+                const msg = contactErrorMessage(data.code);
+                if (data.field) setFieldError(data.field, msg);
+                else {
+                    formError.textContent = msg;
+                    formError.classList.remove('hidden');
+                }
+                return;
+            }
+            e.target.reset();
+            clearContactErrors();
+            success.classList.remove('hidden');
+        } catch (err) {
+            formError.textContent = t('contact_err_generic');
+            formError.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = t('contact_send');
+        }
+    });
+
+    document.getElementById('resource-search').addEventListener('input', () => {
+        clearTimeout(resourceSearchTimer);
+        resourceSearchTimer = setTimeout(loadLandingResources, 280);
+    });
+
+    applyI18n();
+    observeReveals();
+    </script>
+</body>
+</html>

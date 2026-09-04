@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Mindfulness">
+  <defs>
+    <linearGradient id="g" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#DBEDE2"/>
+      <stop offset="100%" stop-color="#BFD7EA"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g)"/>
+  <circle cx="400" cy="260" r="110" fill="#FFFFFF" opacity=".35"/>
+  <circle cx="400" cy="260" r="70" fill="#FFFFFF" opacity=".45"/>
+  <circle cx="400" cy="200" r="36" fill="#F1F0F5"/>
+  <path d="M350 250 q50 70 100 0" fill="#F1F0F5"/>
+  <path d="M400 140 q0 -40 0 -55" stroke="#7FA997" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="400" cy="78" r="10" fill="#7FA997"/>
+</svg>
