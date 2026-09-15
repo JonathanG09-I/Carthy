@@ -1,7 +1,7 @@
 import os
 import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Carthy_project.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "carthy_project.settings")
 django.setup()
 
 from django.contrib.auth import get_user_model
