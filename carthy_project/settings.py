@@ -136,10 +136,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-<<<<<<< HEAD
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
-=======
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STORAGES = {
     "default": {
@@ -149,7 +147,7 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
->>>>>>> 15c8d73 (Fix static files for Render)
+
 
 # Media files (uploaded covers, PDFs)
 MEDIA_URL = '/media/'
