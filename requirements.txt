@@ -3,7 +3,11 @@ Pillow>=10.0.0
 cryptography>=41.0.0
 django-cors-headers>=4.0.0
 gunicorn
+<<<<<<< HEAD
 dj-database-url
 psycopg2-binary
 whitenoise
 python-dotenv
+=======
+whitenoise>=6.8.2
+>>>>>>> 15c8d73 (Fix static files for Render)
